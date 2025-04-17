@@ -1,19 +1,32 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>PCR & SLA</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <title>PCR & SLA - Vue</title>
+  <script src="https://unpkg.com/vue@3"></script>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container">
-        <h1>PCR & SLA</h1>
-        <p>Apabila ada kendala, segera sampaikan ke tim Quality Control</p>
-        
-        <!-- Tombol ke Halaman Kedua -->
-        <a href="input.html" class="my-button">Masukan Data</a>
-        <a href="view.html" class="my-button">Lihat dan Ubah Status</a>
-        <a href="https://docs.google.com/spreadsheets/d/157r2DA_9aEp_JQhzA15pPj2-GUnyKFJoaju-pw006M4/edit?usp=sharing" 
-        class="my-button link-button" target="_blank">Lihat data</a>
- 
+  <div id="app" class="container">
+    <h1>{{ title }}</h1>
+    <p>{{ description }}</p>
+
+    <!-- Tombol -->
+    <a href="input.html" class="my-button">Masukan Data</a>
+    <a href="view.html" class="my-button">Lihat dan Ubah Status</a>
+    <a :href="sheetLink" class="my-button link-button" target="_blank">Lihat data</a>
+  </div>
+
+  <script>
+    Vue.createApp({
+      data() {
+        return {
+          title: 'PCR & SLA',
+          description: 'Apabila ada kendala, segera sampaikan ke tim Quality Control',
+          sheetLink: 'https://docs.google.com/spreadsheets/d/157r2DA_9aEp_JQhzA15pPj2-GUnyKFJoaju-pw006M4/edit?usp=sharing'
+        }
+      }
+    }).mount('#app')
+  </script>
 </body>
 </html>
