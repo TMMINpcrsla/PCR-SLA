@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Input Data PCR & SLA</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Sertakan Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-database-compat.js"></script>
+    <style>
+        .input-form {
+            margin: 20px 0;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+        }
+        .input-group {
+            margin-bottom: 15px;
+        }
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            text-align: left;
+            padding-left: 0;
+        }
+        .input-group input, .input-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        .submit-btn {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .submit-btn:hover {
+            background-color: #45a049;
+        }
+        .status-message {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 4px;
+            display: none;
+        }
+        .success {
+            background-color: #dff0d8;
+            color: #3c763d;
+        }
+        .error {
+            background-color: #f2dede;
+            color: #a94442;
+        }
+        .container {
+            padding-left: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Status PCR & SLA</h1>
+        
+        <div class="input-form">
+            <div class="input-group">
+                <label for="inputA">Doc Received Date</label>
+                <input type="text" id="inputA" placeholder="YYYY-MM-DD" maxlength="10">
+            </div>
+            
+            <div class="input-group">
+                <label for="inputB">PCR/SLA Control No.</label>
+                <input type="text" id="inputB">
+            </div>
+            
+            <div class="input-group">
+                <label for="inputC">Supplier Name</label>
+                <select id="inputC">
+                    <option value="">Pilih opsi</option>
+                    <option value="AISAN NASMOCO INDUSTRI">AISAN NASMOCO INDUSTRI</option>
+                    <option value="AISIN INDONESIA">AISIN INDONESIA</option>
+                    <option value="AISIN INDONESIA OTOMOTIF">AISIN INDONESIA OTOMOTIF</option>
+                    <option value="AOYAMA INDONESIA">AOYAMA INDONESIA</option>
+                    <option value="ART PISTON INDONESIA">ART PISTON INDONESIA</option>
+                    <option value="ASSB MALAYSIA">ASSB MALAYSIA</option>
+                    <option value="ASTRA NIPPON GASKET INDONESIA">ASTRA NIPPON GASKET INDONESIA</option>
+                    <option value="AT INDONESIA">AT INDONESIA</option>
+                    <option value="AUTOMOTIVE FASTENERS AOYAMA INDONESIA">AUTOMOTIVE FASTENERS AOYAMA INDONESIA</option>
+                    <option value="CATALER">CATALER</option>
+                    <option value="DENSO INDONESIA CORPORATION (FAJAR)">DENSO INDONESIA CORPORATION (FAJAR)</option>
+                    <option value="DIAMOND DELECTRIC INDONESIA">DIAMOND DELECTRIC INDONESIA</option>
+                    <option value="FUKOKU TOKAI RUBBER">FUKOKU TOKAI RUBBER</option>
+                    <option value="FUTABA INDONESIA">FUTABA INDONESIA</option>
+                    <option value="HITACHI">HITACHI</option>
+                    <option value="ITOKIN">ITOKIN</option>
+                    <option value="METALART ASTRA INDONESIA">METALART ASTRA INDONESIA</option>
+                    <option value="NICHIAS SUNIJAYA">NICHIAS SUNIJAYA</option>
+                    <option value="NOK INDONESIA">NOK INDONESIA</option>
+                    <option value="OTICS INDONESIA">OTICS INDONESIA</option>
+                    <option value="PAKAR TIRIKEN INDONESIA">PAKAR TIRIKEN INDONESIA</option>
+                    <option value="PARIN">PARIN</option>
+                    <option value="PATEC PRESISI ENGINEERING">PATEC PRESISI ENGINEERING</option>
+                    <option value="ROBERT BOSCH">ROBERT BOSCH</option>
+                    <option value="SARI TAKAGI ELOK PRODUK">SARI TAKAGI ELOK PRODUK</option>
+                    <option value="SIAM THAILAND MOTOR">SIAM THAILAND MOTOR</option>
+                    <option value="SUMIDEN SINTERED COMPONENT INDONESIA">SUMIDEN SINTERED COMPONENT INDONESIA</option>
+                    <option value="SUNCHIRIN INDUSTRI INDONESIA">SUNCHIRIN INDUSTRI INDONESIA</option>
+                    <option value="TAIHO NUSANTARA">TAIHO NUSANTARA</option>
+                    <option value="TB-INA">TB-INA</option>
+                    <option value="TOYOTA BOSHOKU INDONESIA">TOYOTA BOSHOKU INDONESIA</option>
+                    <option value="TPR SALES INDONESIA">TPR SALES INDONESIA</option>
+                    <option value="VELASTO INDONESIA">IVELASTO INDONESIA</option>
+                    <option value="YASUNAGA INDONESIA">YASUNAGA INDONESIA</option>
+                    <option value="#NA">#NA</option>
+                </select>
+            </div>
+
+            <div class="input-group">
+                <label for="inputD">Part Number</label>
+                <input type="text" id="inputD" placeholder="12345-12345-12" maxlength="14">
+            </div>
+
+            <div class="input-group">
+                <label for="inputE">Part Name</label>
+                <input type="text" id="inputE">
+            </div>
+
+            <div class="input-group">
+                <label for="inputF">Change Category</label>
+                <select id="inputF">
+                    <option value="">Pilih opsi</option>
+                    <option value="Add Supplier">Add Supplier</option>
+                    <option value="Capacity">Capacity</option>
+                    <option value="Change Supplier">Change Supplier</option>
+                    <option value="Cost">Cost</option>
+                    <option value="Govt Regulation">Govt Regulation</option>
+                    <option value="Localization">Localization</option>
+                    <option value="Mfg/Storage Loc">Mfg/Storage Loc</option>
+                    <option value="Productivity">Productivity</option>
+                    <option value="Quality">Quality</option>
+                    <option value="Risk Mgmt">Risk Mgmt</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+
+            <div class="input-group">
+                <label for="inputG">Previous Process</label>
+                <input type="text" id="inputG">
+            </div>
+
+            <div class="input-group">
+                <label for="inputH">New Process</label>
+                <input type="text" id="inputH">
+            </div>
+            
+            <button id="submitBtn" class="submit-btn">Enter Data</button>
+            
+            <div id="statusMessage" class="status-message"></div>
+        </div>
+        
+        <p>Apabila ada kendala, segera sampaikan ke tim Quality Control</p>
+        <a href="home.html" class="my-button">Kembali ke Home</a>
+    </div>
+
+    <script>
+        // Konfigurasi Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyDB31VI5CjfiLPwD5njBa2tVHz_UXipNH0",
+            authDomain: "pcr-sla-28728.firebaseapp.com",
+            databaseURL: "https://pcr-sla-28728-default-rtdb.firebaseio.com",
+            projectId: "pcr-sla-28728",
+            storageBucket: "pcr-sla-28728.firebasestorage.app",
+            messagingSenderId: "738065802011",
+            appId: "1:738065802011:web:28f865a4cb84a76f0a69be",
+            measurementId: "G-NE5XL3LRJ8"
+        };
+
+        // Inisialisasi Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        // Fungsi untuk memformat input tanggal
+        function formatDateInput() {
+            const input = document.getElementById('inputA');
+            let value = input.value.replace(/[^\d]/g, ''); // Hapus semua non-digit
+            
+            // Format otomatis saat mengetik
+            if (value.length > 4) {
+                value = value.substring(0, 4) + '-' + value.substring(4);
+            }
+            if (value.length > 7) {
+                value = value.substring(0, 7) + '-' + value.substring(7);
+            }
+            
+            // Batasi panjang maksimal
+            input.value = value.substring(0, 10);
+        }
+
+        function formatPartNumberInput() {
+            const input = document.getElementById('inputD');
+            let value = input.value.toUpperCase(); // Convert ke uppercase
+            value = value.replace(/[^A-Z0-9-]/g, ''); // Hanya biarkan huruf, angka, dan strip
+    
+            // Hapus semua strip untuk memulai pemformatan dari awal
+            const valueWithoutHyphens = value.replace(/-/g, '');
+    
+            // Format otomatis saat mengetik
+            let formattedValue = valueWithoutHyphens;
+
+            if (valueWithoutHyphens.length > 5) {
+                formattedValue = valueWithoutHyphens.substring(0, 5) + '-' + valueWithoutHyphens.substring(5);
+            }
+            if (valueWithoutHyphens.length > 11) {
+                formattedValue = formattedValue.substring(0, 11) + '-' + formattedValue.substring(11);
+            }
+                // Batasi panjang maksimal
+             input.value = formattedValue.substring(0, 14);
+        }
+
+        // Fungsi untuk menyimpan data ke Firebase
+        function saveData() {
+            const inputA = document.getElementById('inputA').value.trim();
+            const inputB = document.getElementById('inputB').value.trim();
+            const inputC = document.getElementById('inputC').value;
+            const inputD = document.getElementById('inputD').value.trim();
+            const inputE = document.getElementById('inputE').value.trim();
+            const inputF = document.getElementById('inputF').value;
+            const inputG = document.getElementById('inputG').value.trim();
+            const inputH = document.getElementById('inputH').value.trim();
+            const statusMessage = document.getElementById('statusMessage');
+
+            // Validasi input
+            if (!inputA || !inputB || !inputC || !inputD || !inputE || !inputF || !inputG || !inputH) {
+                showStatus('Semua field harus diisi!', 'error');
+                return;
+            }
+
+            // Validasi format tanggal (YYYY-MM-DD)
+            const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+            if (!dateRegex.test(inputA)) {
+                showStatus('Format tanggal harus YYYY-MM-DD!', 'error');
+                return;
+            }
+             
+            // Simpan data ke Firebase
+            database.ref(inputA).set({
+                B: inputB,
+                C: inputC,
+                D: inputD,
+                E: inputE,
+                F: inputF,
+                G: inputG,
+                H: inputH,
+                status: 'New'
+            })
+            .then(() => {
+                showStatus('Data berhasil disimpan!', 'success');
+                // Kosongkan form setelah berhasil disimpan
+                document.getElementById('inputA').value = '';
+                document.getElementById('inputB').value = '';
+                document.getElementById('inputC').value = '';
+                document.getElementById('inputD').value = '';
+                document.getElementById('inputE').value = '';
+                document.getElementById('inputF').value = '';
+                document.getElementById('inputG').value = '';
+                document.getElementById('inputH').value = '';
+            })
+            .catch((error) => {
+                showStatus('Error: ' + error.message, 'error');
+            });
+        }
+
+        // Fungsi untuk menampilkan status
+        function showStatus(message, type) {
+            const statusElement = document.getElementById('statusMessage');
+            statusElement.textContent = message;
+            statusElement.className = 'status-message ' + type;
+            statusElement.style.display = 'block';
+            
+            // Sembunyikan pesan setelah 3 detik
+            setTimeout(() => {
+                statusElement.style.display = 'none';
+            }, 3000);
+        }
+
+        // Event listener untuk input tanggal
+        document.getElementById('inputA').addEventListener('input', formatDateInput);
+        // Event listener untuk input Part Number
+        document.getElementById('inputD').addEventListener('input', formatPartNumberInput);
+
+        // Event listener untuk tombol submit
+        document.getElementById('submitBtn').addEventListener('click', saveData);
+
+        // Tambahkan event listener untuk tombol Enter
+        document.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                saveData();
+            }
+        });
+    </script>
+</body>
+</html>
