@@ -206,6 +206,22 @@
         .filled-input {
             background-color: #adff9b !important;
         }
+        
+        /* Delete button style */
+        .delete-btn {
+            background-color: #ff4444;
+            color: white;
+            border: none;
+            padding: 6px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 13px;
+        }
+        
+        .delete-btn:hover {
+            background-color: #cc0000;
+        }
     </style>
 </head>
 <body>
@@ -254,6 +270,7 @@
                             <th>Status</th>
                             <th>Update Status</th>
                             <th>Notes______________________</th>
+                            <th>Delete</th> <!-- Kolom baru untuk delete -->
                         </tr>
                         <tr>
                             <!-- Kolom-kolom sebelum Mass Pro -->
@@ -282,6 +299,7 @@
                             <th></th>
                             <th></th>
                             <th></th>
+                            <th></th> <!-- Kolom kosong untuk alignment -->
                         </tr>
                     </thead>
                     <tbody>
@@ -438,6 +456,20 @@
                 database.ref(key + '/status').set(newStatus)
                     .catch((error) => {
                         console.error('Error updating status:', error);
+                    });
+            }
+        }
+
+        // Fungsi untuk menghapus record dari Firebase
+        function deleteRecord(key) {
+            if (confirm('Are you sure you want to delete this record?')) {
+                database.ref(key).remove()
+                    .then(() => {
+                        alert('Record deleted successfully!');
+                        loadData(); // Memuat ulang data setelah penghapusan
+                    })
+                    .catch((error) => {
+                        alert('Error deleting record: ' + error.message);
                     });
             }
         }
@@ -843,6 +875,17 @@
                     });
                     cellColumnNotes.appendChild(inputNotes);
                     row.appendChild(cellColumnNotes);
+
+                    // Action Column - Delete Button
+                    const cellAction = document.createElement('td');
+                    const deleteBtn = document.createElement('button');
+                    deleteBtn.className = 'delete-btn';
+                    deleteBtn.textContent = 'Delete';
+                    deleteBtn.onclick = function() {
+                        deleteRecord(key);
+                    };
+                    cellAction.appendChild(deleteBtn);
+                    row.appendChild(cellAction);
 
                     tableBody.appendChild(row);
                 });
