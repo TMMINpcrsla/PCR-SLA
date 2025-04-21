@@ -15,6 +15,7 @@
         }
         .input-group {
             margin-bottom: 15px;
+            position: relative;
         }
         .input-group label {
             display: block;
@@ -59,6 +60,26 @@
         .container {
             padding-left: 20px;
         }
+        .date-picker-wrapper {
+            position: relative;
+            display: flex;
+        }
+        .date-picker-wrapper input[type="date"] {
+            position: absolute;
+            right: 0;
+            top: 0;
+            width: 40px;
+            height: 40px;
+            opacity: 0;
+            cursor: pointer;
+        }
+        .date-picker-wrapper::after {
+            content: "📅";
+            position: absolute;
+            right: 10px;
+            top: 10px;
+            pointer-events: none;
+        }
     </style>
 </head>
 <body>
@@ -68,7 +89,10 @@
         <div class="input-form">
             <div class="input-group">
                 <label for="inputA">Doc Received Date</label>
-                <input type="text" id="inputA" placeholder="YYYY-MM-DD" maxlength="10">
+                <div class="date-picker-wrapper">
+                    <input type="text" id="inputA" placeholder="YYYY-MM-DD" maxlength="10">
+                    <input type="date" id="datePicker" onchange="setDateFromPicker(this.value)">
+                </div>
             </div>
             
             <div class="input-group">
@@ -120,7 +144,7 @@
 
             <div class="input-group">
                 <label for="inputD">Part Number</label>
-                <input type="text" id="inputD" placeholder="12345-12345-12" maxlength="14">
+                <input type="text" id="inputD" placeholder="12345-12345-AB" maxlength="14">
             </div>
 
             <div class="input-group">
@@ -156,13 +180,17 @@
                 <input type="text" id="inputH">
             </div>
             
-            <button id="submitBtn" class="submit-btn">Enter Data</button>
+            <div class="button-container">
+                <button id="submitBtn" class="submit-btn">Enter Data</button>
+            </div>
             
             <div id="statusMessage" class="status-message"></div>
         </div>
         
         <p>Apabila ada kendala, segera sampaikan ke tim Quality Control</p>
-        <a href="index.html" class="my-button">Kembali ke Home</a>
+        <div class="button-container">
+            <a href="index.html" class="my-button">Kembali ke Home</a>
+        </div>
     </div>
 
     <script>
@@ -197,6 +225,17 @@
             
             // Batasi panjang maksimal
             input.value = value.substring(0, 10);
+        }
+
+        // Fungsi untuk mengisi tanggal dari date picker
+        function setDateFromPicker(dateValue) {
+            if (dateValue) {
+                const date = new Date(dateValue);
+                const year = date.getFullYear();
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const day = String(date.getDate()).padStart(2, '0');
+                document.getElementById('inputA').value = `${year}-${month}-${day}`;
+            }
         }
 
         function formatPartNumberInput() {
@@ -254,7 +293,14 @@
                 F: inputF,
                 G: inputG,
                 H: inputH,
-                status: 'New'
+                I:'',//sample part
+                J:'',//special job
+                K:'',//trial date
+                L:'',//trial report number
+                M:'',//trial report result (judgement)
+                P:'',//mas pro report number
+                status: 'New',
+                notes: ''
             })
             .then(() => {
                 showStatus('Data berhasil disimpan!', 'success');

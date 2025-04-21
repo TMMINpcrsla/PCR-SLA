@@ -7,24 +7,80 @@ body {
 }
 
 .container {
-    max-width: 800px;
-    margin: 50px auto;
+    max-width: 95%; /* Lebih lebar dari sebelumnya */
+    margin: 20px auto;
     padding: 20px;
     background: white;
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+.container h1 {
     text-align: center;
+    margin: 0 0 30px 0;
+    padding-bottom: 15px;
+    color: #ff0000; /* Warna merah seperti header tabel */
+    font-size: 40px;
+    font-weight: bold;
+    border-bottom: 2px solid #ff0000; /* Garis bawah */
+    text-transform: uppercase; /* Huruf kapital semua */
 }
 
+.container p {
+    text-align: center;
+    margin: 0 0 30px 0;
+    padding-top: 30px;
+    color: #000000; /* eperti header tabel */
+    font-size: 18px;
+    font: times new roman;
+    border-top: 2px solid #ff0000; /* Garis bawah */
+}
 .my-button {
     display: inline-block;
+    text-align: center;
     padding: 10px 20px;
     background-color: #4285f4;
     color: white;
     text-decoration: none;
     border-radius: 5px;
-    margin: 10px;
+    margin: 10px 0;
+    justify-content: center;
     transition: background 0.3s;
+    font-weight: bold;
+}
+
+.filled-cell {
+    background-color: #fcff48 !important; /* Light green background */
+}
+
+.filled-input {
+    background-color: #fcff48 !important;
+}
+
+.my-button2 {
+    display: inline-block;
+    text-align: center;
+    padding: 10px 20px;
+    background-color: none; /* Tidak ada warna latar belakang */
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    margin: 10px 0;
+    justify-content: center;
+    transition: background 0.3s;
+    font-weight: bold;
+}
+
+.button-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin: 20px 20px 20px 20px;
+}
+
+.catalog-container {
+    display: flex;
+    justify-content: center;
+    margin: 20px 0px 20px 0px;
 }
 
 .my-button:hover {
@@ -37,4 +93,219 @@ body {
 
 .green:hover {
     background-color: #45a049;
+}
+
+/* Table Scroll Container Styles */
+.table-scroll-container {
+    position: relative;
+    width: 100%;
+    margin: 20px 0;
+}
+
+.table-scroll-top {
+    width: 100%;
+    height: 20px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    margin-bottom: 5px;
+}
+
+.table-scroll-top-inner {
+    height: 1px;
+}
+
+.table-container {
+    width: 100%;
+    overflow-x: auto;
+    margin: 0;
+}
+
+/* Gaya untuk header tabel */
+th {
+    font-size: 12px; /* Ukuran font header */
+    white-space: nowrap; /* Pastikan teks header tidak wrap */
+    overflow: visible; /* Pastikan teks tidak disembunyikan */
+    text-overflow: clip; /* Tidak perlu ellipsis */
+    padding: 10px 12px; /* Padding yang cukup */
+    position: sticky;
+    top: 0;
+    background-color: #e01616;
+    color: white;
+    font-weight: bold;
+    text-align: center; /* Pusatkan judul kolom */
+    z-index: 10;
+}
+
+/* Gaya untuk isi sel tabel */
+td {
+    white-space: normal; /* Biarkan isi wrap sesuai kebutuhan */
+    word-wrap: break-word; /* Memungkinkan kata panjang untuk dipotong */
+    padding: 8px 10px;
+    border: 1px solid #ddd;
+    font-size: 11px;
+}
+
+/* Tabel itu sendiri */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: auto; /* Lebar kolom menyesuaikan konten */
+}
+
+/* Memastikan lebar minimum untuk kolom tertentu */
+th:nth-child(1), td:nth-child(1) { min-width: 120px; } /* PCR/SLA Control No. */
+th:nth-child(2), td:nth-child(2) { min-width: 80px; } /* Date */
+
+/* Input and Select Styles */
+.edit-select, .edit-input {
+    width: 100%;
+    padding: 8px;
+    box-sizing: border-box;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 12px;
+}
+
+.edit-select:focus, .edit-input:focus {
+    outline: none;
+    border-color: #4285f4;
+    box-shadow: 0 0 3px rgba(66, 133, 244, 0.5);
+}
+
+.save-btn {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    width: 100%;
+    font-size: 12px;
+    font-weight: bold;
+    transition: background 0.3s;
+}
+
+.save-btn:hover {
+    background-color: #45a049;
+}
+
+/* Status Badges */
+.status-new {
+    background-color: #6cc6f3;
+    color: #28556b;
+    font-weight: bold;
+    padding: 5px 10px;
+    border-radius: 4px;
+    display: inline-block;
+}
+
+.status-done {
+    background-color: #abf68d;
+    color: #325a32;
+    font-weight: bold;
+    padding: 5px 10px;
+    border-radius: 4px;
+    display: inline-block;
+}
+
+.status-ongoing {
+    background-color: #f9fbae;
+    color: #7a7d37;
+    font-weight: bold;
+    padding: 5px 10px;
+    border-radius: 4px;
+    display: inline-block;
+}
+
+.status-canceled {
+    background-color: #afa8a8;
+    color: #535353;
+    font-weight: bold;
+    padding: 5px 10px;
+    border-radius: 4px;
+    display: inline-block;
+}
+
+/* Chart Container */
+.chart-container {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    margin: 20px 0;
+    gap: 10px;
+}
+
+.chart-box {
+    flex: none; /* Remove flex growth */
+    width: 200px;
+    height: 200px;
+    padding: 0;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 0 5px rgba(0,0,0,0.1);
+    overflow: hidden; /* Ensure charts don't overflow */
+}
+
+/* Adjust chart canvas elements */
+#statusChart{
+    width: 200px !important;
+    height: 200px !important;
+    display: block;
+    margin: 0 auto; /* Center the chart */
+    padding: 0; /* Remove padding */
+}
+
+#barChart {
+    width: 400px !important;
+    height: 200px !important;
+    display: block;
+    margin: 0 auto; /* Center the chart */
+    padding: 0; /* Remove padding */
+}
+
+/* Custom scrollbar styling */
+::-webkit-scrollbar {
+    height: 12px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 6px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .container {
+        margin: 10px auto;
+        padding: 10px;
+    }
+    
+    th, td {
+        padding: 8px 10px;
+        font-size: 11px;
+    }
+    
+    .chart-container {
+        flex-direction: column;
+    }
+    
+    .chart-box {
+        width: 100%;
+        height: auto;
+        aspect-ratio: 1/1;
+    }
+    
+    #statusChart, #barChart {
+        width: 100% !important;
+        height: auto !important;
+    }
 }

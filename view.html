@@ -10,28 +10,77 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         /* CSS yang sama seperti sebelumnya */
-        .table-container {
-            margin: 10px 0;
-            overflow-x: auto;
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
         }
-        table {
+        
+        .container {
+            max-width: 95%;
+            margin: 20px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        
+        /* Table Scroll Container */
+        .table-scroll-container {
+            position: relative;
             width: 100%;
+            margin: 20px 0;
+        }
+        
+        .table-scroll-top {
+            width: 100%;
+            height: 20px;
+            overflow-x: auto;
+            overflow-y: hidden;
+            margin-bottom: 5px;
+        }
+        
+        .table-scroll-top-inner {
+            height: 1px;
+        }
+        
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+            margin: 0;
+        }
+        
+        table {
+            width: 200%;
             border-collapse: collapse;
             margin-bottom: 20px;
         }
+        
         th, td {
             border: 1px solid #ddd;
             padding: 8px;
             text-align: left;
             font-size: 10px;
         }
+        
         th {
-            background-color: #e01616;
+            background-color: #ff0000;
             color: white;
+            white-space: nowrap;
+            position: sticky;
+            top: 0;
         }
+        
         tr:nth-child(even) {
             background-color: #f2f2f2;
         }
+        
         .edit-select {
             width: 100%;
             padding: 6px;
@@ -39,6 +88,15 @@
             margin-bottom: 6px;
             font-size: 9px;
         }
+        
+        .edit-input {
+            width: 100%;
+            padding: 6px;
+            box-sizing: border-box;
+            margin-bottom: 6px;
+            font-size: 9px;
+        }
+        
         .save-btn {
             background-color: #4CAF50;
             color: white;
@@ -49,46 +107,111 @@
             width: 100%;
             font-size: 13px;
         }
+        
         .save-btn:hover {
             background-color: #45a049;
         }
+        
         .status-new {
             background-color: #6cc6f3;
             color: #28556b;
             font-weight: bold;
         }
+        
         .status-done {
-            background-color: #abf68d;
+            background-color: #86ff56;
             color: #325a32;
             font-weight: bold;
         }
+        
         .status-ongoing {
             background-color: #f9fbae;
             color: #7a7d37;
             font-weight: bold;
         }
+        
         .status-canceled {
             background-color: #afa8a8;
             color: #535353;
             font-weight: bold;
         }
+        
         .chart-container {
             display: flex;
             justify-content: space-around;
             flex-wrap: wrap;
             margin: 20px auto;
         }
+        
         .chart-box {
             width: 45%;
             min-width: 300px;
             margin: 10px;
             padding: 10px;
         }
+        
+        .disabled-input {
+            background-color: #f2f2f2;
+            cursor: not-allowed;
+        }
+        
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            height: 12px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 6px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #ff9b9b;
+            border-radius: 6px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: #ff0000;
+        }
+        
+        .my-button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #4285f4;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 10px;
+            transition: background 0.3s;
+            font-weight: bold;
+        }
+        
+        .my-button:hover {
+            background-color: #3367d6;
+        }
+        
+        .green {
+            background-color: #4CAF50;
+        }
+        
+        .green:hover {
+            background-color: #45a049;
+        }
+        
+        /* New style for filled cells */
+        .filled-cell {
+            background-color: #ffffff !important; /* Light green background */
+        }
+        
+        .filled-input {
+            background-color: #adff9b !important;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Status PCR & SLA</h1>
+            
         
         <!-- Container untuk Charts -->
         <div class="chart-container">
@@ -99,31 +222,78 @@
                 <canvas id="barChart"></canvas>
             </div>
         </div>
+        <div class="catalog-container">
+            <img src="Flow.png" alt="Flow" 
+            class="logo" width="500" height="100">
+        </div>
         
-        <div class="table-container">
-            <table id="dataTable">
-                <thead>
-                    <tr>
-                        <th>PCR/SLA Control No.</th>
-                        <th>Date</th>
-                        <th>Supplier Name</th>
-                        <th>Part Number</th>
-                        <th>Part Name</th>
-                        <th>Change Category</th>
-                        <th>Prev. Process</th>
-                        <th>New Process</th>
-                        <th>Status</th>
-                        <th>Update Status</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <!-- Data akan diisi oleh JavaScript -->
-                </tbody>
-            </table>
+        <!-- Table Container with Dual Scrollbars -->
+        <div class="table-scroll-container">
+            <div class="table-scroll-top">
+                <div class="table-scroll-top-inner"></div>
+            </div>
+            <div class="table-container">
+                <table id="dataTable">
+                    <thead>
+                        <tr>
+                            <th>PCR/SLA Control No.</th>
+                            <th>Date</th>  
+                            <th>Supplier Name</th>
+                            <th>Part Number</th>
+                            <th>Part Name</th>
+                            <th>Change Category</th>
+                            <th>Prev. Process</th>
+                            <th>New Process</th>
+                            <th>Engine Number Sample</th>
+                            <th>Special Job Number</th>
+                            <th>Trial Date</th>
+                            <th>Report Trial Number</th>
+                            <th>Judgement</th>
+                            <th colspan="6">Mass Pro/implementation type</th>
+                            <th>First E/G number</th>
+                            <th>Status</th>
+                            <th>Update Status</th>
+                            <th>Notes______________________</th>
+                        </tr>
+                        <tr>
+                            <!-- Kolom-kolom sebelum Mass Pro -->
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <!-- Subkolom Mass Pro -->
+                            <th>Supplier</th>
+                            <th>P3 ETA</th>
+                            <th>CEVD ETD</th>
+                            <th>Importer ETA</th>
+                            <th>First Module</th>
+                            <th>TMMIN Line</th>
+                            <!-- Kolom setelah Mass Pro -->
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
         </div>
         
         <p>Apabila ada kendala, segera sampaikan ke tim Quality Control</p>
-        <a href="index.html" class="my-button">Kembali ke Home</a>
+        <div class="button-container">
+            <a href="index.html" class="my-button">Kembali ke Home</a>
+        </div>
     </div>
 
     <script>
@@ -133,7 +303,7 @@
             authDomain: "pcr-sla-28728.firebaseapp.com",
             databaseURL: "https://pcr-sla-28728-default-rtdb.firebaseio.com",
             projectId: "pcr-sla-28728",
-            storageBucket: "pcr-sla-28728.firebasestorage.app",
+            storageBucket: "pcr-sla-28728.appspot.com",
             messagingSenderId: "738065802011",
             appId: "1:738065802011:web:28f865a4cb84a76f0a69be",
             measurementId: "G-NE5XL3LRJ8"
@@ -151,21 +321,16 @@
         let barChart;
 
         // Fungsi untuk membuat atau memperbarui charts
-        function updateCharts(closedCount, ongoingCount) {
-            // Data untuk charts
-            const chartData = {
-                labels: ['Closed', 'Ongoing'],
+        function updateCharts(closedCount, ongoingCount, pcrCount, partDiterimaCount, specialJobCount, isrCount) {
+            // Data untuk pie chart
+            const pieData = {
+                labels: ['Closed', 'Processed'],
                 datasets: [{
                     data: [closedCount, ongoingCount],
                     backgroundColor: [
                         '#00bf63', // Hijau untuk Closed
-                        '#ffde59', // Kuning untuk Ongoing
+                        '#c1ff72', // Kuning untuk Ongoing
                     ],
-                    borderColor: [
-                        '#008a4a', // Hijau tua
-                        '#e6c847', // Kuning tua
-                    ],
-                    borderWidth: 1
                 }]
             };
 
@@ -176,12 +341,12 @@
             }
             statusChart = new Chart(pieCtx, {
                 type: 'pie',
-                data: chartData,
+                data: pieData,
                 options: {
                     responsive: true,
                     plugins: {
                         legend: {
-                            position: 'top',
+                            position: 'east',
                         },
                         tooltip: {
                             callbacks: {
@@ -196,11 +361,25 @@
                         },
                         title: {
                             display: true,
-                            text: 'Status Distribution (Pie)'
+                            text: 'Status Distribution'
                         }
                     }
                 }
             });
+
+            // Data untuk bar chart baru
+            const barData = {
+                labels: ['PCR', 'Part Diterima', 'Special Job', 'ISR'],
+                datasets: [{
+                    data: [pcrCount, partDiterimaCount, specialJobCount, isrCount],
+                    backgroundColor: [
+                        '#ff3131', // Merah untuk PCR
+                        '#ff914d', // Jingga untuk Part Diterima
+                        '#f9fbae', // Kuning untuk Special Job
+                        '#00bf63'  // Hijau untuk ISR
+                    ],
+                }]
+            };
 
             // Bar Chart
             const barCtx = document.getElementById('barChart').getContext('2d');
@@ -209,7 +388,7 @@
             }
             barChart = new Chart(barCtx, {
                 type: 'bar',
-                data: chartData,
+                data: barData,
                 options: {
                     responsive: true,
                     scales: {
@@ -233,11 +412,34 @@
                         },
                         title: {
                             display: true,
-                            text: 'Status Distribution (Bar)'
+                            text: 'Completion Tracker'
                         }
                     }
                 }
             });
+        }
+
+        // Fungsi untuk memeriksa dan mengupdate status berdasarkan kolom yang diisi
+        function updateStatusBasedOnColumns(key, item) {
+            let newStatus = item.status || 'New';
+            
+            if (item.P && item.P.trim() !== '') {
+                newStatus = 'Closed';
+            } else if (item.M && item.M.trim() !== '') {
+                newStatus = 'Wait for implementation';
+            } else if (item.J && item.J.trim() !== '') {
+                newStatus = 'Under Quality Confirmation';
+            } else if (item.I && item.I.trim() !== '') {
+                newStatus = 'Wait for OTS Part';
+            }
+            
+            // Hanya update jika status berubah
+            if (newStatus !== item.status) {
+                database.ref(key + '/status').set(newStatus)
+                    .catch((error) => {
+                        console.error('Error updating status:', error);
+                    });
+            }
         }
 
         // Fungsi untuk memuat data ke tabel
@@ -248,7 +450,7 @@
                 tableBody.innerHTML = '';
 
                 if (!data) {
-                    updateCharts(0, 0);
+                    updateCharts(0, 0, 0, 0, 0, 0);
                     return;
                 }
 
@@ -257,60 +459,317 @@
 
                 let closedCount = 0;
                 let ongoingCount = 0;
+                let pcrCount = 0;
+                let partDiterimaCount = 0;
+                let specialJobCount = 0;
+                let isrCount = 0;
 
                 dataArray.forEach(([key, item]) => {
                     // Update chart counts
-                    if (item.status === 'Closed') {
+                    const status = item.status || 'New';
+                    
+                    // Untuk pie chart
+                    if (status === 'Closed') {
                         closedCount++;
-                    } else if (item.status === 'Under Quality Confirmation' || 
-                              item.status === 'Wait for OTS Part' || 
-                              item.status === 'New' || 
-                              item.status === 'Wait for implementation') {
+                    } else if (status === 'Under Quality Confirmation' || 
+                              status === 'Wait for OTS Part' || 
+                              status === 'New' || 
+                              status === 'Wait for implementation') {
                         ongoingCount++;
                     }
                     
-                    // ... (rest of your table population code remains the same)
+                    // Untuk bar chart baru
+                    if (['New', 'Closed', 'Under Quality Confirmation', 'Wait for OTS Part', 'Wait for implementation'].includes(status)) {
+                        pcrCount++;
+                    }
+                    if (['Closed', 'Under Quality Confirmation', 'Wait for OTS Part', 'Wait for implementation'].includes(status)) {
+                        partDiterimaCount++;
+                    }
+                    if (['Closed', 'Under Quality Confirmation', 'Wait for implementation'].includes(status)) {
+                        specialJobCount++;
+                    }
+                    if (['Closed', 'Wait for implementation'].includes(status)) {
+                        isrCount++;
+                    }
+                    
                     const row = document.createElement('tr');
                     
                     // PCR/SLA Control No.
                     const cellControlNo = document.createElement('td');
                     cellControlNo.textContent = item.B || '-';
+                    if (item.B && item.B.trim() !== '') {
+                        cellControlNo.classList.add('filled-cell');
+                    }
                     row.appendChild(cellControlNo);
                     
                     // Date
                     const cellDate = document.createElement('td');
                     cellDate.textContent = key || '-';
+                    if (key && key.trim() !== '') {
+                        cellDate.classList.add('filled-cell');
+                    }
                     row.appendChild(cellDate);
                     
                     // Supplier Name
                     const cellSupplier = document.createElement('td');
                     cellSupplier.textContent = item.C || '-';
+                    if (item.C && item.C.trim() !== '') {
+                        cellSupplier.classList.add('filled-cell');
+                    }
                     row.appendChild(cellSupplier);
                     
                     // Part Number
                     const cellPartNo = document.createElement('td');
                     cellPartNo.textContent = item.D || '-';
+                    if (item.D && item.D.trim() !== '') {
+                        cellPartNo.classList.add('filled-cell');
+                    }
                     row.appendChild(cellPartNo);
                     
                     // Part Name
                     const cellPartName = document.createElement('td');
                     cellPartName.textContent = item.E || '-';
+                    if (item.E && item.E.trim() !== '') {
+                        cellPartName.classList.add('filled-cell');
+                    }
                     row.appendChild(cellPartName);
                     
                     // Change Category
                     const cellChangeCat = document.createElement('td');
                     cellChangeCat.textContent = item.F || '-';
+                    if (item.F && item.F.trim() !== '') {
+                        cellChangeCat.classList.add('filled-cell');
+                    }
                     row.appendChild(cellChangeCat);
                     
                     // Prev. Process
                     const cellPrevProcess = document.createElement('td');
                     cellPrevProcess.textContent = item.G || '-';
+                    if (item.G && item.G.trim() !== '') {
+                        cellPrevProcess.classList.add('filled-cell');
+                    }
                     row.appendChild(cellPrevProcess);
                     
                     // New Process
                     const cellNewProcess = document.createElement('td');
                     cellNewProcess.textContent = item.H || '-';
+                    if (item.H && item.H.trim() !== '') {
+                        cellNewProcess.classList.add('filled-cell');
+                    }
                     row.appendChild(cellNewProcess);
+                    
+                    // Column I - Engine Number Sample
+                    const cellColumnI = document.createElement('td');
+                    const inputI = document.createElement('input');
+                    inputI.type = 'text';
+                    inputI.className = 'edit-input';
+                    inputI.value = item.I || '';
+                    if (item.I && item.I.trim() !== '') {
+                        inputI.classList.add('filled-input');
+                    }
+                    inputI.addEventListener('change', function() {
+                        updateColumn(key, 'I', inputI.value);
+                        updateStatusBasedOnColumns(key, {...item, I: inputI.value});
+                        updateColumnDependencies(row, item);
+                        // Update filled class
+                        if (inputI.value.trim() !== '') {
+                            inputI.classList.add('filled-input');
+                        } else {
+                            inputI.classList.remove('filled-input');
+                        }
+                    });
+                    cellColumnI.appendChild(inputI);
+                    row.appendChild(cellColumnI);
+                    
+                    // Column J - Special Job Number
+                    const cellColumnJ = document.createElement('td');
+                    const inputJ = document.createElement('input');
+                    inputJ.type = 'text';
+                    inputJ.className = 'edit-input';
+                    inputJ.value = item.J || '';
+                    if (item.J && item.J.trim() !== '') {
+                        inputJ.classList.add('filled-input');
+                    }
+                    if (!item.I || item.I.trim() === '') {
+                        inputJ.disabled = true;
+                        inputJ.classList.add('disabled-input');
+                    }
+                    inputJ.addEventListener('change', function() {
+                        updateColumn(key, 'J', inputJ.value);
+                        updateStatusBasedOnColumns(key, {...item, J: inputJ.value});
+                        updateColumnDependencies(row, item);
+                        // Update filled class
+                        if (inputJ.value.trim() !== '') {
+                            inputJ.classList.add('filled-input');
+                        } else {
+                            inputJ.classList.remove('filled-input');
+                        }
+                    });
+                    cellColumnJ.appendChild(inputJ);
+                    row.appendChild(cellColumnJ);
+                    
+                    // Column K - Trial Date
+                    const cellColumnK = document.createElement('td');
+                    const inputK = document.createElement('input');
+                    inputK.type = 'date';
+                    inputK.className = 'edit-input';
+                    inputK.value = item.K ? item.K.replace(/\//g, '-') : '';
+                    if (item.K && item.K.trim() !== '') {
+                        inputK.classList.add('filled-input');
+                    }
+                    if (!item.J || item.J.trim() === '') {
+                        inputK.disabled = true;
+                        inputK.classList.add('disabled-input');
+                    }
+                    inputK.addEventListener('change', function() {
+                        const dateValue = this.value.replace(/-/g, '/');
+                        updateColumn(key, 'K', dateValue);
+                        updateColumnDependencies(row, item);
+                        // Update filled class
+                        if (dateValue.trim() !== '') {
+                            inputK.classList.add('filled-input');
+                        } else {
+                            inputK.classList.remove('filled-input');
+                        }
+                    });
+                    cellColumnK.appendChild(inputK);
+                    row.appendChild(cellColumnK);
+                    
+                    // Column L - Report Trial Number
+                    const cellColumnL = document.createElement('td');
+                    const inputL = document.createElement('input');
+                    inputL.type = 'text';
+                    inputL.className = 'edit-input';
+                    inputL.value = item.L || '';
+                    if (item.L && item.L.trim() !== '') {
+                        inputL.classList.add('filled-input');
+                    }
+                    if (!item.K || item.K.trim() === '') {
+                        inputL.disabled = true;
+                        inputL.classList.add('disabled-input');
+                    }
+                    inputL.addEventListener('change', function() {
+                        updateColumn(key, 'L', inputL.value);
+                        updateColumnDependencies(row, item);
+                        // Update filled class
+                        if (inputL.value.trim() !== '') {
+                            inputL.classList.add('filled-input');
+                        } else {
+                            inputL.classList.remove('filled-input');
+                        }
+                    });
+                    cellColumnL.appendChild(inputL);
+                    row.appendChild(cellColumnL);
+                    
+                    // Column M - Judgement (select)
+                    const cellColumnM = document.createElement('td');
+                    const selectM = document.createElement('select');
+                    selectM.className = 'edit-select';
+                    selectM.value = item.M || '';
+                    if (item.M && item.M.trim() !== '') {
+                        selectM.classList.add('filled-input');
+                    }
+
+                    // Add options for Judgement
+                    const optionMDefault = document.createElement('option');
+                    optionMDefault.value = '';
+                    optionMDefault.textContent = 'Select Judgement';
+                    selectM.appendChild(optionMDefault);
+
+                    const optionMOK = document.createElement('option');
+                    optionMOK.value = 'OK';
+                    optionMOK.textContent = 'OK';
+                    selectM.appendChild(optionMOK);
+
+                    const optionMNG = document.createElement('option');
+                    optionMNG.value = 'NG';
+                    optionMNG.textContent = 'NG';
+                    selectM.appendChild(optionMNG);
+
+                    if (item.M) {
+                        selectM.value = item.M;
+                    }
+
+                    if (!item.L || item.L.trim() === '') {
+                        selectM.disabled = true;
+                        selectM.classList.add('disabled-input');
+                    }
+
+                    selectM.addEventListener('change', function() {
+                        updateColumn(key, 'M', selectM.value);
+                        updateStatusBasedOnColumns(key, {...item, M: selectM.value});
+                        updateColumnDependencies(row, item);
+                        // Update filled class
+                        if (selectM.value.trim() !== '') {
+                            selectM.classList.add('filled-input');
+                        } else {
+                            selectM.classList.remove('filled-input');
+                        }
+                    });
+                    cellColumnM.appendChild(selectM);
+                    row.appendChild(cellColumnM);
+
+                    // 6 Sub-columns for Mass Pro Dates (MPA-MPF)
+                    const massProLetters = ['A', 'B', 'C', 'D', 'E', 'F'];
+                    massProLetters.forEach(letter => {
+                        const cellColumn = document.createElement('td');
+                        const inputDate = document.createElement('input');
+                        inputDate.type = 'date';
+                        inputDate.className = 'edit-input';
+                        const fieldName = 'MP' + letter;
+                        inputDate.value = item[fieldName] ? item[fieldName].replace(/\//g, '-') : '';
+                        if (item[fieldName] && item[fieldName].trim() !== '') {
+                            inputDate.classList.add('filled-input');
+                        }
+                        
+                        if (!item.M || item.M.trim() === '') {
+                            inputDate.disabled = true;
+                            inputDate.classList.add('disabled-input');
+                        }
+                        
+                        inputDate.addEventListener('change', function() {
+                            const dateValue = this.value.replace(/-/g, '/');
+                            updateColumn(key, fieldName, dateValue);
+                            updateStatusBasedOnColumns(key, {...item, [fieldName]: dateValue});
+                            // Update filled class
+                            if (dateValue.trim() !== '') {
+                                inputDate.classList.add('filled-input');
+                            } else {
+                                inputDate.classList.remove('filled-input');
+                            }
+                        });
+                        
+                        cellColumn.appendChild(inputDate);
+                        row.appendChild(cellColumn);
+                    });
+
+                    // Column P - First E/G number
+                    const cellColumnP = document.createElement('td');
+                    const inputP = document.createElement('input');
+                    inputP.type = 'text';
+                    inputP.className = 'edit-input';
+                    inputP.value = item.P || '';
+                    if (item.P && item.P.trim() !== '') {
+                        inputP.classList.add('filled-input');
+                    }
+                    // Disable jika semua kolom MP kosong
+                    const anyMPFilled = massProLetters.some(letter => item['MP' + letter]);
+                    if (!anyMPFilled) {
+                        inputP.disabled = true;
+                        inputP.classList.add('disabled-input');
+                    }
+                    inputP.addEventListener('change', function() {
+                        updateColumn(key, 'P', inputP.value);
+                        updateStatusBasedOnColumns(key, {...item, P: inputP.value});
+                        // Update filled class
+                        if (inputP.value.trim() !== '') {
+                            inputP.classList.add('filled-input');
+                        } else {
+                            inputP.classList.remove('filled-input');
+                        }
+                    });
+                    cellColumnP.appendChild(inputP);
+                    row.appendChild(cellColumnP);
                     
                     // Status
                     const cellStatus = document.createElement('td');
@@ -344,21 +803,6 @@
                     optionClosed.textContent = 'Closed';
                     select.appendChild(optionClosed);
 
-                    const optionQuality = document.createElement('option');
-                    optionQuality.value = 'Under Quality Confirmation';
-                    optionQuality.textContent = 'Under Quality Confirmation';
-                    select.appendChild(optionQuality);
-
-                    const optionOTS = document.createElement('option');
-                    optionOTS.value = 'Wait for OTS Part';
-                    optionOTS.textContent = 'Wait for OTS Part';
-                    select.appendChild(optionOTS);
-
-                    const optionImplement = document.createElement('option');
-                    optionImplement.value = 'Wait for implementation';
-                    optionImplement.textContent = 'Wait for implementation';
-                    select.appendChild(optionImplement);
-
                     const optionCanceled = document.createElement('option');
                     optionCanceled.value = 'Canceled';
                     optionCanceled.textContent = 'Canceled';
@@ -379,11 +823,107 @@
                     cellUpdate.appendChild(saveBtn);
                     row.appendChild(cellUpdate);
                     
+                    // Notes
+                    const cellColumnNotes = document.createElement('td');
+                    const inputNotes = document.createElement('input');
+                    inputNotes.type = 'text';
+                    inputNotes.className = 'edit-input';
+                    inputNotes.value = item.notes || '';
+                    if (item.notes && item.notes.trim() !== '') {
+                        inputNotes.classList.add('filled-input');
+                    }
+                    inputNotes.addEventListener('change', function() {
+                        updateColumn(key, 'notes', inputNotes.value);
+                        // Update filled class
+                        if (inputNotes.value.trim() !== '') {
+                            inputNotes.classList.add('filled-input');
+                        } else {
+                            inputNotes.classList.remove('filled-input');
+                        }
+                    });
+                    cellColumnNotes.appendChild(inputNotes);
+                    row.appendChild(cellColumnNotes);
+
                     tableBody.appendChild(row);
                 });
 
-                updateCharts(closedCount, ongoingCount);
+                updateCharts(closedCount, ongoingCount, pcrCount, partDiterimaCount, specialJobCount, isrCount);
+                
+                // Update scrollbar width after loading data
+                syncScrollBars();
             });
+        }
+
+        // Fungsi untuk mengupdate dependencies kolom
+        function updateColumnDependencies(row, item) {
+            const inputs = row.querySelectorAll('.edit-input');
+            const selects = row.querySelectorAll('.edit-select');
+            
+            // Gabungkan semua input dan select
+            const allFields = Array.from(inputs).concat(Array.from(selects));
+            
+            // Urutkan berdasarkan posisi di tabel
+            allFields.sort((a, b) => {
+                return a.closest('td').cellIndex - b.closest('td').cellIndex;
+            });
+            
+            // Enable/disable columns based on previous column content
+            for (let i = 1; i < allFields.length; i++) {
+                const prevField = allFields[i-1];
+                const currentField = allFields[i];
+                
+                // Skip untuk kolom MP (A-F) karena mereka depend on Judgement (M)
+                if (currentField.id && currentField.id.includes('MP')) continue;
+                
+                if (prevField.value && prevField.value.trim() === '' && 
+                    !(prevField.tagName === 'SELECT' && prevField.value === '')) {
+                    currentField.value = '';
+                    currentField.disabled = true;
+                    currentField.classList.add('disabled-input');
+                } else {
+                    currentField.disabled = false;
+                    currentField.classList.remove('disabled-input');
+                }
+            }
+            
+            // Handle khusus untuk kolom MP (A-F) - depend on Judgement (M)
+            const judgementSelect = row.querySelector('td:nth-child(14) select');
+            const mpInputs = row.querySelectorAll('td:nth-child(15), td:nth-child(16), td:nth-child(17), td:nth-child(18), td:nth-child(19), td:nth-child(20) input');
+            
+            if (judgementSelect && judgementSelect.value.trim() === '') {
+                mpInputs.forEach(input => {
+                    input.value = '';
+                    input.disabled = true;
+                    input.classList.add('disabled-input');
+                });
+            } else {
+                mpInputs.forEach(input => {
+                    input.disabled = false;
+                    input.classList.remove('disabled-input');
+                });
+            }
+            
+            // Handle khusus untuk First E/G number (P) - depend on salah satu MP terisi
+            const firstEGInput = row.querySelector('td:nth-child(21) input');
+            if (firstEGInput) {
+                const anyMPFilled = Array.from(mpInputs).some(input => input.value.trim() !== '');
+                if (!anyMPFilled) {
+                    firstEGInput.value = '';
+                    firstEGInput.disabled = true;
+                    firstEGInput.classList.add('disabled-input');
+                } else {
+                    firstEGInput.disabled = false;
+                    firstEGInput.classList.remove('disabled-input');
+                }
+            }
+        }
+
+        // Fungsi untuk mengupdate kolom di Firebase
+        function updateColumn(key, column, value) {
+            database.ref(key + '/' + column).set(value)
+                .catch((error) => {
+                    console.error('Error updating column:', error);
+                });
         }
 
         // Fungsi untuk mengupdate status di Firebase
@@ -402,9 +942,33 @@
                     alert('Error updating status: ' + error.message);
                 });
         }
+        
+        // Fungsi untuk sinkronisasi scroll bar
+        function syncScrollBars() {
+            const tableContainer = document.querySelector('.table-container');
+            const tableScrollTop = document.querySelector('.table-scroll-top');
+            const table = document.querySelector('#dataTable');
+            
+            if (tableContainer && tableScrollTop && table) {
+                // Set width of the top scroll indicator
+                const tableScrollTopInner = document.querySelector('.table-scroll-top-inner');
+                tableScrollTopInner.style.width = table.scrollWidth + 'px';
+                
+                // Sync scrolling between top and bottom
+                tableContainer.addEventListener('scroll', function() {
+                    tableScrollTop.scrollLeft = this.scrollLeft;
+                });
+                
+                tableScrollTop.addEventListener('scroll', function() {
+                    tableContainer.scrollLeft = this.scrollLeft;
+                });
+            }
+        }
 
         // Muat data saat halaman dimuat
-        window.onload = loadData;
+        window.onload = function() {
+            loadData();
+        };
     </script>
 </body>
 </html>
