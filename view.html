@@ -830,15 +830,22 @@
                     optionDefault.textContent = 'Select status';
                     select.appendChild(optionDefault);
 
-                    const optionClosed = document.createElement('option');
-                    optionClosed.value = 'Closed';
-                    optionClosed.textContent = 'Closed';
-                    select.appendChild(optionClosed);
+                    const optionWait = document.createElement('option');
+                    optionWait.value = 'Wait for OTS Part';
+                    optionWait.textContent = 'Wait for OTS Part';
+                    select.appendChild(optionWait);
 
                     const optionCanceled = document.createElement('option');
                     optionCanceled.value = 'Canceled';
                     optionCanceled.textContent = 'Canceled';
                     select.appendChild(optionCanceled);
+
+                    const optionClosed = document.createElement('option');
+                    optionClosed.value = 'Closed';
+                    optionClosed.textContent = 'Closed';
+                    select.appendChild(optionClosed);
+
+                    
                     
                     if (item.status) {
                         select.value = item.status;
