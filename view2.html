@@ -81,37 +81,6 @@
             background-color: #f2f2f2;
         }
         
-        .edit-select {
-            width: 100%;
-            padding: 6px;
-            box-sizing: border-box;
-            margin-bottom: 6px;
-            font-size: 9px;
-        }
-        
-        .edit-input {
-            width: 100%;
-            padding: 6px;
-            box-sizing: border-box;
-            margin-bottom: 6px;
-            font-size: 9px;
-        }
-        
-        .save-btn {
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            padding: 6px 10px;
-            border-radius: 4px;
-            cursor: pointer;
-            width: 100%;
-            font-size: 13px;
-        }
-        
-        .save-btn:hover {
-            background-color: #45a049;
-        }
-        
         .status-new {
             background-color: #6cc6f3;
             color: #28556b;
@@ -148,11 +117,6 @@
             min-width: 300px;
             margin: 10px;
             padding: 10px;
-        }
-        
-        .disabled-input {
-            background-color: #f2f2f2;
-            cursor: not-allowed;
         }
         
         /* Custom scrollbar */
@@ -200,27 +164,16 @@
         
         /* New style for filled cells */
         .filled-cell {
-            background-color: #ffffff !important; /* Light green background */
+            background-color: #ffffff !important;
         }
         
-        .filled-input {
-            background-color: #adff9b !important;
-        }
-        
-        /* Delete button style */
-        .delete-btn {
-            background-color: #ff4444;
-            color: white;
-            border: none;
-            padding: 6px 10px;
-            border-radius: 4px;
-            cursor: pointer;
+        .plain-text {
             width: 100%;
-            font-size: 13px;
-        }
-        
-        .delete-btn:hover {
-            background-color: #cc0000;
+            padding: 2px;
+            box-sizing: border-box;
+            font-size: 9px;
+            border: none;
+            background: transparent;
         }
     </style>
 </head>
@@ -268,9 +221,7 @@
                             <th colspan="6">Mass Pro/implementation type</th>
                             <th>First E/G number</th>
                             <th>Status</th>
-                            <th>Update Status</th>
                             <th>Notes______________________</th>
-                            <th>Delete</th> <!-- Kolom baru untuk delete -->
                         </tr>
                         <tr>
                             <!-- Kolom-kolom sebelum Mass Pro -->
@@ -298,8 +249,6 @@
                             <th></th>
                             <th></th>
                             <th></th>
-                            <th></th>
-                            <th></th> <!-- Kolom kosong untuk alignment -->
                         </tr>
                     </thead>
                     <tbody>
@@ -311,9 +260,10 @@
         <p>Apabila ada kendala, segera sampaikan ke tim Quality Control</p>
         <div class="button-container">
             <a href="index.html" class="my-button">Kembali ke Home</a>
-            <a href="view.html" class="my-button2"> </a>
-            <a href="https://docs.google.com/spreadsheets/d/157r2DA_9aEp_JQhzA15pPj2-GUnyKFJoaju-pw006M4/edit?usp=sharing" 
-            class="my-button">SpreadSheets</a>
+            <a href="view2.html" class="my-button2"> </a>
+            <a href="input.html" class="my-button">Masukan Data</a>
+            <a href="view2.html" class="my-button2"> </a>
+            <a href="schedule.html" class="my-button">Lihat Jadwal</a>
         </div>
     </div>
 
@@ -440,43 +390,6 @@
             });
         }
 
-        // Fungsi untuk memeriksa dan mengupdate status berdasarkan kolom yang diisi
-        function updateStatusBasedOnColumns(key, item) {
-            let newStatus = item.status || 'New';
-            
-            if (item.P && item.P.trim() !== '') {
-                newStatus = 'Closed';
-            } else if (item.M && item.M.trim() !== '') {
-                newStatus = 'Wait for implementation';
-            } else if (item.J && item.J.trim() !== '') {
-                newStatus = 'Under Quality Confirmation';
-            } else if (item.I && item.I.trim() !== '') {
-                newStatus = 'Wait for OTS Part';
-            }
-            
-            // Hanya update jika status berubah
-            if (newStatus !== item.status) {
-                database.ref(key + '/status').set(newStatus)
-                    .catch((error) => {
-                        console.error('Error updating status:', error);
-                    });
-            }
-        }
-
-        // Fungsi untuk menghapus record dari Firebase
-        function deleteRecord(key) {
-            if (confirm('Are you sure you want to delete this record?')) {
-                database.ref(key).remove()
-                    .then(() => {
-                        alert('Record deleted successfully!');
-                        loadData(); // Memuat ulang data setelah penghapusan
-                    })
-                    .catch((error) => {
-                        alert('Error deleting record: ' + error.message);
-                    });
-            }
-        }
-
         // Fungsi untuk memuat data ke tabel
         function loadData() {
             dataRef.on('value', (snapshot) => {
@@ -594,220 +507,63 @@
                     row.appendChild(cellNewProcess);
                     
                     // Column I - Engine Number Sample
-
                     const cellColumnI = document.createElement('td');
-                    const inputI = document.createElement('input');
-                    inputI.type = 'date';
-                    inputI.className = 'edit-input';
-                    inputI.value = item.I ? item.I.replace(/\//g, '-') : '';
-                    if (item.I && item.I.trim() !== '') {
-                        inputI.classList.add('filled-input');
-                    }
-                    inputI.addEventListener('change', function() {
-                        const dateValue = this.value.replace(/-/g, '/');
-                        updateColumn(key, 'I', dateValue);
-                        updateColumnDependencies(row, item);
-                        // Update filled class
-                        if (dateValue.trim() !== '') {
-                            inputI.classList.add('filled-input');
-                        } else {
-                            inputI.classList.remove('filled-input');
-                        }
-                    });
-                    cellColumnI.appendChild(inputI);
+                    const displayI = document.createElement('div');
+                    displayI.className = 'plain-text';
+                    displayI.textContent = item.I || '-';
+                    cellColumnI.appendChild(displayI);
                     row.appendChild(cellColumnI);
-
-
-                    
                     
                     // Column J - Special Job Number
                     const cellColumnJ = document.createElement('td');
-                    const inputJ = document.createElement('input');
-                    inputJ.type = 'text';
-                    inputJ.className = 'edit-input';
-                    inputJ.value = item.J || '';
-                    if (item.J && item.J.trim() !== '') {
-                        inputJ.classList.add('filled-input');
-                    }
-                    if (!item.I || item.I.trim() === '') {
-                        inputJ.disabled = true;
-                        inputJ.classList.add('disabled-input');
-                    }
-                    inputJ.addEventListener('change', function() {
-                        updateColumn(key, 'J', inputJ.value);
-                        updateStatusBasedOnColumns(key, {...item, J: inputJ.value});
-                        updateColumnDependencies(row, item);
-                        // Update filled class
-                        if (inputJ.value.trim() !== '') {
-                            inputJ.classList.add('filled-input');
-                        } else {
-                            inputJ.classList.remove('filled-input');
-                        }
-                    });
-                    cellColumnJ.appendChild(inputJ);
+                    const displayJ = document.createElement('div');
+                    displayJ.className = 'plain-text';
+                    displayJ.textContent = item.J || '-';
+                    cellColumnJ.appendChild(displayJ);
                     row.appendChild(cellColumnJ);
                     
                     // Column K - Trial Date
                     const cellColumnK = document.createElement('td');
-                    const inputK = document.createElement('input');
-                    inputK.type = 'date';
-                    inputK.className = 'edit-input';
-                    inputK.value = item.K ? item.K.replace(/\//g, '-') : '';
-                    if (item.K && item.K.trim() !== '') {
-                        inputK.classList.add('filled-input');
-                    }
-                    if (!item.J || item.J.trim() === '') {
-                        inputK.disabled = true;
-                        inputK.classList.add('disabled-input');
-                    }
-                    inputK.addEventListener('change', function() {
-                        const dateValue = this.value.replace(/-/g, '/');
-                        updateColumn(key, 'K', dateValue);
-                        updateColumnDependencies(row, item);
-                        // Update filled class
-                        if (dateValue.trim() !== '') {
-                            inputK.classList.add('filled-input');
-                        } else {
-                            inputK.classList.remove('filled-input');
-                        }
-                    });
-                    cellColumnK.appendChild(inputK);
+                    const displayK = document.createElement('div');
+                    displayK.className = 'plain-text';
+                    displayK.textContent = item.K || '-';
+                    cellColumnK.appendChild(displayK);
                     row.appendChild(cellColumnK);
                     
                     // Column L - Report Trial Number
                     const cellColumnL = document.createElement('td');
-                    const inputL = document.createElement('input');
-                    inputL.type = 'text';
-                    inputL.className = 'edit-input';
-                    inputL.value = item.L || '';
-                    if (item.L && item.L.trim() !== '') {
-                        inputL.classList.add('filled-input');
-                    }
-                    if (!item.K || item.K.trim() === '') {
-                        inputL.disabled = true;
-                        inputL.classList.add('disabled-input');
-                    }
-                    inputL.addEventListener('change', function() {
-                        updateColumn(key, 'L', inputL.value);
-                        updateColumnDependencies(row, item);
-                        // Update filled class
-                        if (inputL.value.trim() !== '') {
-                            inputL.classList.add('filled-input');
-                        } else {
-                            inputL.classList.remove('filled-input');
-                        }
-                    });
-                    cellColumnL.appendChild(inputL);
+                    const displayL = document.createElement('div');
+                    displayL.className = 'plain-text';
+                    displayL.textContent = item.L || '-';
+                    cellColumnL.appendChild(displayL);
                     row.appendChild(cellColumnL);
                     
-                    // Column M - Judgement (select)
+                    // Column M - Judgement
                     const cellColumnM = document.createElement('td');
-                    const selectM = document.createElement('select');
-                    selectM.className = 'edit-select';
-                    selectM.value = item.M || '';
-                    if (item.M && item.M.trim() !== '') {
-                        selectM.classList.add('filled-input');
-                    }
-
-                    // Add options for Judgement
-                    const optionMDefault = document.createElement('option');
-                    optionMDefault.value = '';
-                    optionMDefault.textContent = 'Select Judgement';
-                    selectM.appendChild(optionMDefault);
-
-                    const optionMOK = document.createElement('option');
-                    optionMOK.value = 'OK';
-                    optionMOK.textContent = 'OK';
-                    selectM.appendChild(optionMOK);
-
-                    const optionMNG = document.createElement('option');
-                    optionMNG.value = 'NG';
-                    optionMNG.textContent = 'NG';
-                    selectM.appendChild(optionMNG);
-
-                    if (item.M) {
-                        selectM.value = item.M;
-                    }
-
-                    if (!item.L || item.L.trim() === '') {
-                        selectM.disabled = true;
-                        selectM.classList.add('disabled-input');
-                    }
-
-                    selectM.addEventListener('change', function() {
-                        updateColumn(key, 'M', selectM.value);
-                        updateStatusBasedOnColumns(key, {...item, M: selectM.value});
-                        updateColumnDependencies(row, item);
-                        // Update filled class
-                        if (selectM.value.trim() !== '') {
-                            selectM.classList.add('filled-input');
-                        } else {
-                            selectM.classList.remove('filled-input');
-                        }
-                    });
-                    cellColumnM.appendChild(selectM);
+                    const displayM = document.createElement('div');
+                    displayM.className = 'plain-text';
+                    displayM.textContent = item.M || '-';
+                    cellColumnM.appendChild(displayM);
                     row.appendChild(cellColumnM);
 
                     // 6 Sub-columns for Mass Pro Dates (MPA-MPF)
                     const massProLetters = ['A', 'B', 'C', 'D', 'E', 'F'];
                     massProLetters.forEach(letter => {
                         const cellColumn = document.createElement('td');
-                        const inputDate = document.createElement('input');
-                        inputDate.type = 'date';
-                        inputDate.className = 'edit-input';
+                        const displayMP = document.createElement('div');
+                        displayMP.className = 'plain-text';
                         const fieldName = 'MP' + letter;
-                        inputDate.value = item[fieldName] ? item[fieldName].replace(/\//g, '-') : '';
-                        if (item[fieldName] && item[fieldName].trim() !== '') {
-                            inputDate.classList.add('filled-input');
-                        }
-                        
-                        if (!item.M || item.M.trim() === '') {
-                            inputDate.disabled = true;
-                            inputDate.classList.add('disabled-input');
-                        }
-                        
-                        inputDate.addEventListener('change', function() {
-                            const dateValue = this.value.replace(/-/g, '/');
-                            updateColumn(key, fieldName, dateValue);
-                            updateStatusBasedOnColumns(key, {...item, [fieldName]: dateValue});
-                            // Update filled class
-                            if (dateValue.trim() !== '') {
-                                inputDate.classList.add('filled-input');
-                            } else {
-                                inputDate.classList.remove('filled-input');
-                            }
-                        });
-                        
-                        cellColumn.appendChild(inputDate);
+                        displayMP.textContent = item[fieldName] || '-';
+                        cellColumn.appendChild(displayMP);
                         row.appendChild(cellColumn);
                     });
 
                     // Column P - First E/G number
                     const cellColumnP = document.createElement('td');
-                    const inputP = document.createElement('input');
-                    inputP.type = 'text';
-                    inputP.className = 'edit-input';
-                    inputP.value = item.P || '';
-                    if (item.P && item.P.trim() !== '') {
-                        inputP.classList.add('filled-input');
-                    }
-                    // Disable jika semua kolom MP kosong
-                    const anyMPFilled = massProLetters.some(letter => item['MP' + letter]);
-                    if (!anyMPFilled) {
-                        inputP.disabled = true;
-                        inputP.classList.add('disabled-input');
-                    }
-                    inputP.addEventListener('change', function() {
-                        updateColumn(key, 'P', inputP.value);
-                        updateStatusBasedOnColumns(key, {...item, P: inputP.value});
-                        // Update filled class
-                        if (inputP.value.trim() !== '') {
-                            inputP.classList.add('filled-input');
-                        } else {
-                            inputP.classList.remove('filled-input');
-                        }
-                    });
-                    cellColumnP.appendChild(inputP);
+                    const displayP = document.createElement('div');
+                    displayP.className = 'plain-text';
+                    displayP.textContent = item.P || '-';
+                    cellColumnP.appendChild(displayP);
                     row.appendChild(cellColumnP);
                     
                     // Status
@@ -826,80 +582,13 @@
                     }
                     row.appendChild(cellStatus);
                     
-                    // Update Status
-                    const cellUpdate = document.createElement('td');
-                    
-                    const select = document.createElement('select');
-                    select.className = 'edit-select';
-                    
-                    const optionDefault = document.createElement('option');
-                    optionDefault.value = '';
-                    optionDefault.textContent = 'Select status';
-                    select.appendChild(optionDefault);
-
-                    const optionWait = document.createElement('option');
-                    optionWait.value = 'Wait for OTS Part';
-                    optionWait.textContent = 'Wait for OTS Part';
-                    select.appendChild(optionWait);
-
-                    const optionCanceled = document.createElement('option');
-                    optionCanceled.value = 'Canceled';
-                    optionCanceled.textContent = 'Canceled';
-                    select.appendChild(optionCanceled);
-
-                    const optionClosed = document.createElement('option');
-                    optionClosed.value = 'Closed';
-                    optionClosed.textContent = 'Closed';
-                    select.appendChild(optionClosed);
-
-                    
-                    
-                    if (item.status) {
-                        select.value = item.status;
-                    }
-                    
-                    const saveBtn = document.createElement('button');
-                    saveBtn.className = 'save-btn';
-                    saveBtn.textContent = 'Update';
-                    saveBtn.onclick = function() {
-                        updateStatus(key, select.value);
-                    };
-                    
-                    cellUpdate.appendChild(select);
-                    cellUpdate.appendChild(saveBtn);
-                    row.appendChild(cellUpdate);
-                    
                     // Notes
                     const cellColumnNotes = document.createElement('td');
-                    const inputNotes = document.createElement('input');
-                    inputNotes.type = 'text';
-                    inputNotes.className = 'edit-input';
-                    inputNotes.value = item.notes || '';
-                    if (item.notes && item.notes.trim() !== '') {
-                        inputNotes.classList.add('filled-input');
-                    }
-                    inputNotes.addEventListener('change', function() {
-                        updateColumn(key, 'notes', inputNotes.value);
-                        // Update filled class
-                        if (inputNotes.value.trim() !== '') {
-                            inputNotes.classList.add('filled-input');
-                        } else {
-                            inputNotes.classList.remove('filled-input');
-                        }
-                    });
-                    cellColumnNotes.appendChild(inputNotes);
+                    const displayNotes = document.createElement('div');
+                    displayNotes.className = 'plain-text';
+                    displayNotes.textContent = item.notes || '-';
+                    cellColumnNotes.appendChild(displayNotes);
                     row.appendChild(cellColumnNotes);
-
-                    // Action Column - Delete Button
-                    const cellAction = document.createElement('td');
-                    const deleteBtn = document.createElement('button');
-                    deleteBtn.className = 'delete-btn';
-                    deleteBtn.textContent = 'Delete';
-                    deleteBtn.onclick = function() {
-                        deleteRecord(key);
-                    };
-                    cellAction.appendChild(deleteBtn);
-                    row.appendChild(cellAction);
 
                     tableBody.appendChild(row);
                 });
@@ -909,123 +598,6 @@
                 // Update scrollbar width after loading data
                 syncScrollBars();
             });
-        }
-
-        // Fungsi untuk mengupdate dependencies kolom
-        function updateColumnDependencies(row, item) {
-            const inputs = row.querySelectorAll('.edit-input');
-            const selects = row.querySelectorAll('.edit-select');
-            
-            // Gabungkan semua input dan select
-            const allFields = Array.from(inputs).concat(Array.from(selects));
-            
-            // Urutkan berdasarkan posisi di tabel
-            allFields.sort((a, b) => {
-                return a.closest('td').cellIndex - b.closest('td').cellIndex;
-            });
-            
-            // Enable/disable columns based on previous column content
-            for (let i = 1; i < allFields.length; i++) {
-                const prevField = allFields[i-1];
-                const currentField = allFields[i];
-                
-                // Skip untuk kolom MP (A-F) karena mereka depend on Judgement (M)
-                if (currentField.id && currentField.id.includes('MP')) continue;
-                
-                if (prevField.value && prevField.value.trim() === '' && 
-                    !(prevField.tagName === 'SELECT' && prevField.value === '')) {
-                    currentField.value = '';
-                    currentField.disabled = true;
-                    currentField.classList.add('disabled-input');
-                } else {
-                    currentField.disabled = false;
-                    currentField.classList.remove('disabled-input');
-                }
-            }
-            
-            // Handle khusus untuk kolom MP (A-F) - depend on Judgement (M)
-            const judgementSelect = row.querySelector('td:nth-child(14) select');
-            const mpInputs = row.querySelectorAll('td:nth-child(15), td:nth-child(16), td:nth-child(17), td:nth-child(18), td:nth-child(19), td:nth-child(20) input');
-            
-            if (judgementSelect && judgementSelect.value.trim() === '') {
-                mpInputs.forEach(input => {
-                    input.value = '';
-                    input.disabled = true;
-                    input.classList.add('disabled-input');
-                });
-            } else {
-                mpInputs.forEach(input => {
-                    input.disabled = false;
-                    input.classList.remove('disabled-input');
-                });
-            }
-            
-            // Handle khusus untuk First E/G number (P) - depend on salah satu MP terisi
-            const firstEGInput = row.querySelector('td:nth-child(21) input');
-            if (firstEGInput) {
-                const anyMPFilled = Array.from(mpInputs).some(input => input.value.trim() !== '');
-                if (!anyMPFilled) {
-                    firstEGInput.value = '';
-                    firstEGInput.disabled = true;
-                    firstEGInput.classList.add('disabled-input');
-                } else {
-                    firstEGInput.disabled = false;
-                    firstEGInput.classList.remove('disabled-input');
-                }
-            }
-        }
-
-        // Fungsi untuk mengupdate kolom di Firebase
-        function updateColumn(key, column, value) {
-            database.ref(key + '/' + column).set(value)
-                .catch((error) => {
-                    console.error('Error updating column:', error);
-                });
-        }
-
-        // Fungsi untuk mengupdate status di Firebase
-        // Fungsi untuk mengupdate status di Firebase
-        function updateStatus(key, newStatus) {
-            if (!newStatus) {
-                alert('Please select a status!');
-                return;
-            }
-            
-            if (newStatus === 'Canceled') {
-                if (confirm('Are you sure you want to cancel this record? This will clear data from Part Sample Received Date onwards.')) {
-                    // Dapatkan referensi ke data yang akan diupdate
-                    const updates = {};
-                    updates[`${key}/status`] = 'Canceled';
-                    
-                    // Daftar kolom yang akan dikosongkan (mulai dari I sampai P dan notes)
-                    const columnsToClear = ['I', 'J', 'K', 'L', 'M', 'MPA', 'MPB', 'MPC', 'MPD', 'MPE', 'MPF', 'P', 'notes'];
-                    
-                    // Tambahkan kolom-kolom yang akan dikosongkan ke updates
-                    columnsToClear.forEach(col => {
-                        updates[`${key}/${col}`] = '';
-                    });
-                    
-                    // Lakukan update multi-path
-                    database.ref().update(updates)
-                        .then(() => {
-                            alert('Status updated to Canceled and related data cleared!');
-                            loadData();
-                        })
-                        .catch((error) => {
-                            alert('Error updating status: ' + error.message);
-                        });
-                }
-            } else {
-                // Untuk status selain Canceled, update seperti biasa
-                database.ref(key + '/status').set(newStatus)
-                    .then(() => {
-                        alert('Status updated successfully!');
-                        loadData();
-                    })
-                    .catch((error) => {
-                        alert('Error updating status: ' + error.message);
-                    });
-            }
         }
         
         // Fungsi untuk sinkronisasi scroll bar

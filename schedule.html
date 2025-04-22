@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Grouping by Month</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-database-compat.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .container {
+            max-width: 95%;
+            margin: 20px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        
+        /* Table Scroll Container */
+        .table-scroll-container {
+            position: relative;
+            width: 100%;
+            margin: 20px 0;
+            overflow-x: auto;
+        }
+        
+        .table-scroll-top {
+            width: 100%;
+            height: 20px;
+            overflow-x: auto;
+            overflow-y: hidden;
+            margin-bottom: 5px;
+        }
+        
+        .table-scroll-top-inner {
+            height: 1px;
+        }
+        
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+            margin: 0;
+        }
+        
+        table {
+            width: auto;
+            min-width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            table-layout: fixed;
+        }
+        
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+            font-size: 10px;
+            min-width: 200px;
+            max-width: 200px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        th {
+            background-color: #ff0000;
+            color: white;
+            position: sticky;
+            top: 0;
+        }
+        
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            height: 12px;
+            width: 12px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 6px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #ff9b9b;
+            border-radius: 6px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: #ff0000;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Grouping by Month</h1>
+        <div class="table-scroll-container">
+            <div class="table-scroll-top">
+                <div class="table-scroll-top-inner"></div>
+            </div>
+            <div class="table-container">
+                <table id="monthTable">
+                    <thead>
+                        <tr id="monthHeaders"></tr>
+                    </thead>
+                    <tbody id="monthData"></tbody>
+                </table>
+            </div>
+            <p>Apabila ada kendala, segera sampaikan ke tim Quality Control</p>
+            <div class="button-container">
+                <a href="index.html" class="my-button">Kembali ke Home</a>
+                <a href="input.html" class="my-button2"> </a>
+                <a href="view2.html" class="my-button">Lihat Status</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Konfigurasi Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyDB31VI5CjfiLPwD5njBa2tVHz_UXipNH0",
+            authDomain: "pcr-sla-28728.firebaseapp.com",
+            databaseURL: "https://pcr-sla-28728-default-rtdb.firebaseio.com",
+            projectId: "pcr-sla-28728",
+            storageBucket: "pcr-sla-28728.appspot.com",
+            messagingSenderId: "738065802011",
+            appId: "1:738065802011:web:28f865a4cb84a76f0a69be",
+            measurementId: "G-NE5XL3LRJ8"
+        };
+
+        // Inisialisasi Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        // Fungsi untuk memformat nama bulan
+        function getMonthName(month) {
+            const months = [
+                "January", "February", "March", "April", 
+                "May", "June", "July", "August", 
+                "September", "October", "November", "December"
+            ];
+            return months[month - 1];
+        }
+
+        // Fungsi untuk memuat dan mengelompokkan data
+        function loadAndGroupData() {
+            database.ref().once('value').then((snapshot) => {
+                const data = snapshot.val();
+                const monthMap = new Map();
+
+                // Proses data dari Firebase
+                if (data) {
+                    Object.entries(data).forEach(([key, item]) => {
+                        for (let i = 0; i < 6; i++) {
+                            const mpKey = `MP${String.fromCharCode(65 + i)}`;
+                            if (item[mpKey] && item[mpKey] !== '-') {
+                                const dateParts = item[mpKey].split('/');
+                                if (dateParts.length === 3) {
+                                    const year = parseInt(dateParts[0]);
+                                    const month = parseInt(dateParts[1]);
+                                    const day = parseInt(dateParts[2]);
+
+                                    const monthYearKey = `${year}-${month.toString().padStart(2, '0')}`;
+                                    if (!monthMap.has(monthYearKey)) {
+                                        monthMap.set(monthYearKey, []);
+                                    }
+
+                                    monthMap.get(monthYearKey).push({
+                                        date: `${year}/${month.toString().padStart(2, '0')}/${day.toString().padStart(2, '0')}`,
+                                        value: item.B || '-',
+                                        key
+                                    });
+                                }
+                            }
+                        }
+                    });
+                }
+
+                // Urutkan data per bulan berdasarkan tanggal
+                monthMap.forEach((entries, monthYear) => {
+                    entries.sort((a, b) => a.date.localeCompare(b.date));
+                });
+
+                // Ambil semua key bulan, urutkan descending
+                const sortedMonthKeys = Array.from(monthMap.keys()).sort((a, b) => {
+                    return new Date(b + '-01') - new Date(a + '-01');
+                });
+
+                // Buat header tabel
+                const headerRow = document.getElementById('monthHeaders');
+                headerRow.innerHTML = '';
+                sortedMonthKeys.forEach(monthYearKey => {
+                    const [year, month] = monthYearKey.split('-');
+                    const th = document.createElement('th');
+                    th.textContent = `${getMonthName(parseInt(month))} ${year}`;
+                    headerRow.appendChild(th);
+                });
+
+                // Cari jumlah maksimum baris
+                let maxRows = 0;
+                sortedMonthKeys.forEach(key => {
+                    const entries = monthMap.get(key) || [];
+                    if (entries.length > maxRows) {
+                        maxRows = entries.length;
+                    }
+                });
+
+                // Buat isi tabel
+                const tbody = document.getElementById('monthData');
+                tbody.innerHTML = '';
+
+                for (let row = 0; row < maxRows; row++) {
+                    const tr = document.createElement('tr');
+
+                    sortedMonthKeys.forEach(key => {
+                        const entries = monthMap.get(key) || [];
+                        const td = document.createElement('td');
+                        if (entries[row]) {
+                            td.textContent = `${entries[row].date}, ${entries[row].value}`;
+                        }
+                        tr.appendChild(td);
+                    });
+
+                    tbody.appendChild(tr);
+                }
+
+                // Sinkronisasi scrollbar
+                syncScrollBars();
+            });
+        }
+
+        // Fungsi untuk sinkronisasi scroll bar
+        function syncScrollBars() {
+            const tableContainer = document.querySelector('.table-container');
+            const tableScrollTop = document.querySelector('.table-scroll-top');
+            const table = document.querySelector('#monthTable');
+            
+            if (tableContainer && tableScrollTop && table) {
+                // Set width of the top scroll indicator
+                const tableScrollTopInner = document.querySelector('.table-scroll-top-inner');
+                tableScrollTopInner.style.width = table.scrollWidth + 'px';
+                
+                // Sync scrolling between top and bottom
+                tableContainer.addEventListener('scroll', function() {
+                    tableScrollTop.scrollLeft = this.scrollLeft;
+                });
+                
+                tableScrollTop.addEventListener('scroll', function() {
+                    tableContainer.scrollLeft = this.scrollLeft;
+                });
+            }
+        }
+
+        // Muat data saat halaman dimuat
+        window.onload = function() {
+            loadAndGroupData();
+            
+            // Atur auto-refresh setiap 1 menit
+            setInterval(loadAndGroupData, 60000);
+        };
+    </script>
+</body>
+</html>

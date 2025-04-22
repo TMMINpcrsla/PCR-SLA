@@ -25,6 +25,17 @@ body {
     text-transform: uppercase; /* Huruf kapital semua */
 }
 
+.container h2 {
+    text-align: center;
+    margin: 0 0 30px 0;
+    padding-top: 30px;
+    color: #ff0000; /* Warna merah seperti header tabel */
+    font-size: 20px;
+    font-weight: bold;
+    border-top: 2px solid #ff0000; /* Garis bawah */
+    text-transform: uppercase; /* Huruf kapital semua */
+}
+
 .container p {
     text-align: center;
     margin: 0 0 30px 0;
