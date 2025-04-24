@@ -45,6 +45,16 @@ body {
     font: times new roman;
     border-top: 2px solid #ff0000; /* Garis bawah */
 }
+
+.container p1 {
+    text-align: left;
+    padding-top: 1px;
+    color: #fb0000; /* eperti header tabel */
+    font-size: 11px;
+    font-weight: bold;
+    font: times new roman;
+}
+
 .my-button {
     display: inline-block;
     text-align: center;
