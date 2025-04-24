@@ -94,6 +94,16 @@
                     <input type="date" id="datePicker" onchange="setDateFromPicker(this.value)">
                 </div>
             </div>
+
+            <div class="input-group">
+                <p1 id="latestDate"></p1>
+            </div>
+
+            <div class="input-group">
+                <label for="inputA1">Angka Khusus</label>
+                <input type="text" id="inputA1" placeholder="tidak wajib, hanya apabila ada tanggal yang sama (dimulai dari 2, cukup angka saja)" maxlength="2">
+            </div>
+
             
             <div class="input-group">
                 <label for="inputB">PCR/SLA Control No.</label>
@@ -254,16 +264,40 @@
             if (valueWithoutHyphens.length > 5) {
                 formattedValue = valueWithoutHyphens.substring(0, 5) + '-' + valueWithoutHyphens.substring(5);
             }
-            if (valueWithoutHyphens.length > 11) {
+            if (valueWithoutHyphens.length > 10) {
                 formattedValue = formattedValue.substring(0, 11) + '-' + formattedValue.substring(11);
             }
                 // Batasi panjang maksimal
              input.value = formattedValue.substring(0, 14);
         }
 
+        // Fungsi untuk mengambil key terbaru dari Firebase
+        function getLatestDateFromFirebase() {
+            const ref = database.ref();
+            ref.once('value', (snapshot) => {
+                const data = snapshot.val();
+                if (data) {
+                    const keys = Object.keys(data).filter(k => /^\d{4}-\d{2}-\d{2}/.test(k)); // filter key yang berbentuk tanggal
+                    keys.sort(); // urutkan ascending
+                    const latestKey = keys[keys.length - 1];
+                    document.getElementById('latestDate').textContent = 'Tanggal terbaru adalah: ' + latestKey;
+                } else {
+                    document.getElementById('latestDate').textContent = 'Belum ada data.';
+                }
+            }, (error) => {
+                console.error('Gagal mengambil data:', error);
+            });
+        }
+
+        // Panggil fungsi saat halaman dimuat
+        window.onload = function() {
+            getLatestDateFromFirebase();
+        };
+
         // Fungsi untuk menyimpan data ke Firebase
         function saveData() {
             const inputA = document.getElementById('inputA').value.trim();
+            const inputA1 = document.getElementById('inputA1').value.trim();
             const inputB = document.getElementById('inputB').value.trim();
             const inputC = document.getElementById('inputC').value;
             const inputD = document.getElementById('inputD').value.trim();
@@ -287,7 +321,28 @@
             }
              
             // Simpan data ke Firebase
-            database.ref(inputA).set({
+            if (inputA1 == '') {
+                database.ref(inputA).set({
+                B: inputB,
+                C: inputC,
+                D: inputD,
+                E: inputE,
+                F: inputF,
+                G: inputG,
+                H: inputH,
+                I:'',//sample part
+                J:'',//special job
+                K:'',//trial date
+                L:'',//trial report number
+                M:'',//trial report result (judgement)
+                P:'',//mas pro report number
+                status: 'New',
+                notes: '',
+                notes2: ''
+                })
+            } else if (inputA1 != '') {
+            }
+                database.ref(inputA +''+'('+inputA1+')').set({
                 B: inputB,
                 C: inputC,
                 D: inputD,
@@ -304,10 +359,12 @@
                 status: 'New',
                 notes: ''
             })
+            
             .then(() => {
                 showStatus('Data berhasil disimpan!', 'success');
                 // Kosongkan form setelah berhasil disimpan
                 document.getElementById('inputA').value = '';
+                document.getElementById('inputA1').value = '';
                 document.getElementById('inputB').value = '';
                 document.getElementById('inputC').value = '';
                 document.getElementById('inputD').value = '';

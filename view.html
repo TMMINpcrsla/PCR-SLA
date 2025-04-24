@@ -200,7 +200,7 @@
         
         /* New style for filled cells */
         .filled-cell {
-            background-color: #ffffff !important; /* Light green background */
+            background-color: #ffffff !important;
         }
         
         .filled-input {
@@ -228,7 +228,6 @@
     <div class="container">
         <h1>Status PCR & SLA</h1>
             
-        
         <!-- Container untuk Charts -->
         <div class="chart-container">
             <div class="chart-box">
@@ -239,8 +238,7 @@
             </div>
         </div>
         <div class="catalog-container">
-            <img src="Flow.png" alt="Flow" 
-            class="logo" width="500" height="100">
+            <img src="Flow.png" alt="Flow" class="logo" width="500" height="100">
         </div>
         
         <!-- Table Container with Dual Scrollbars -->
@@ -258,8 +256,8 @@
                             <th>Part Number</th>
                             <th>Part Name</th>
                             <th>Change Category</th>
-                            <th>Prev. Process</th>
-                            <th>New Process</th>
+                            <th>Prev. Process_________________________</th>
+                            <th>New Process___________________________</th>
                             <th>Part Sample Received Date</th>
                             <th>Special Job Number</th>
                             <th>Trial Date</th>
@@ -269,11 +267,11 @@
                             <th>First E/G number</th>
                             <th>Status</th>
                             <th>Update Status</th>
-                            <th>Notes______________________</th>
-                            <th>Delete</th> <!-- Kolom baru untuk delete -->
+                            <th>Notes (untuk menandai apabila pesan sudah dibaca/lain-lain)</th>
+                            <th>Pesan dari pembuat Data</th>
+                            <th>Delete</th>
                         </tr>
                         <tr>
-                            <!-- Kolom-kolom sebelum Mass Pro -->
                             <th></th>
                             <th></th>
                             <th></th>
@@ -287,19 +285,18 @@
                             <th></th>
                             <th></th>
                             <th></th>
-                            <!-- Subkolom Mass Pro -->
                             <th>Supplier</th>
                             <th>P3 ETA</th>
                             <th>CEVD ETD</th>
                             <th>Importer ETA</th>
                             <th>First Module</th>
                             <th>TMMIN Line</th>
-                            <!-- Kolom setelah Mass Pro -->
                             <th></th>
                             <th></th>
                             <th></th>
                             <th></th>
-                            <th></th> <!-- Kolom kosong untuk alignment -->
+                            <th></th>
+                            <th></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -312,8 +309,13 @@
         <div class="button-container">
             <a href="index.html" class="my-button">Kembali ke Home</a>
             <a href="view.html" class="my-button2"> </a>
+            <a href="input.html" class="my-button">Masukan Data</a>
+            <a href="view.html" class="my-button2"> </a>
+            <a href="schedule.html" class="my-button">Lihat Jadwal</a>
+            <a href="view.html" class="my-button2"> </a>
             <a href="https://docs.google.com/spreadsheets/d/157r2DA_9aEp_JQhzA15pPj2-GUnyKFJoaju-pw006M4/edit?usp=sharing" 
             class="my-button">SpreadSheets</a>
+            
         </div>
     </div>
 
@@ -349,8 +351,8 @@
                 datasets: [{
                     data: [closedCount, ongoingCount],
                     backgroundColor: [
-                        '#00bf63', // Hijau untuk Closed
-                        '#c1ff72', // Kuning untuk Ongoing
+                        '#00bf63',
+                        '#c1ff72',
                     ],
                 }]
             };
@@ -394,10 +396,10 @@
                 datasets: [{
                     data: [pcrCount, partDiterimaCount, specialJobCount, isrCount],
                     backgroundColor: [
-                        '#ff3131', // Merah untuk PCR
-                        '#ff914d', // Jingga untuk Part Diterima
-                        '#f9fbae', // Kuning untuk Special Job
-                        '#00bf63'  // Hijau untuk ISR
+                        '#ff3131',
+                        '#ff914d',
+                        '#f9fbae',
+                        '#00bf63'
                     ],
                 }]
             };
@@ -454,7 +456,6 @@
                 newStatus = 'Wait for OTS Part';
             }
             
-            // Hanya update jika status berubah
             if (newStatus !== item.status) {
                 database.ref(key + '/status').set(newStatus)
                     .catch((error) => {
@@ -469,7 +470,7 @@
                 database.ref(key).remove()
                     .then(() => {
                         alert('Record deleted successfully!');
-                        loadData(); // Memuat ulang data setelah penghapusan
+                        loadData();
                     })
                     .catch((error) => {
                         alert('Error deleting record: ' + error.message);
@@ -500,10 +501,8 @@
                 let isrCount = 0;
 
                 dataArray.forEach(([key, item]) => {
-                    // Update chart counts
                     const status = item.status || 'New';
                     
-                    // Untuk pie chart
                     if (status === 'Closed') {
                         closedCount++;
                     } else if (status === 'Under Quality Confirmation' || 
@@ -513,7 +512,6 @@
                         ongoingCount++;
                     }
                     
-                    // Untuk bar chart baru
                     if (['New', 'Closed', 'Under Quality Confirmation', 'Wait for OTS Part', 'Wait for implementation'].includes(status)) {
                         pcrCount++;
                     }
@@ -529,72 +527,398 @@
                     
                     const row = document.createElement('tr');
                     
-                    // PCR/SLA Control No.
+                    // PCR/SLA Control No. - Input Text
                     const cellControlNo = document.createElement('td');
-                    cellControlNo.textContent = item.B || '-';
+                    const inputB = document.createElement('input');
+                    inputB.type = 'text';
+                    inputB.className = 'edit-input';
+                    inputB.value = item.B || '';
                     if (item.B && item.B.trim() !== '') {
-                        cellControlNo.classList.add('filled-cell');
+                        inputB.classList.add('filled-input');
                     }
+                    inputB.addEventListener('change', function() {
+                        updateColumn(key, 'B', inputB.value);
+                        if (inputB.value.trim() !== '') {
+                            inputB.classList.add('filled-input');
+                        } else {
+                            inputB.classList.remove('filled-input');
+                        }
+                    });
+                    cellControlNo.appendChild(inputB);
                     row.appendChild(cellControlNo);
                     
-                    // Date
+                    // Date - Tetap text biasa karena ini key
                     const cellDate = document.createElement('td');
+                    const inputA = document.createElement('input');
                     cellDate.textContent = key || '-';
                     if (key && key.trim() !== '') {
                         cellDate.classList.add('filled-cell');
                     }
                     row.appendChild(cellDate);
                     
-                    // Supplier Name
-                    const cellSupplier = document.createElement('td');
-                    cellSupplier.textContent = item.C || '-';
+                    // Supplier Name - Input Text
+                    const cellC = document.createElement('td');
+                    const selectC = document.createElement('select');
+                    selectC.className = 'edit-select';
+                    selectC.value = item.C || '';
                     if (item.C && item.C.trim() !== '') {
-                        cellSupplier.classList.add('filled-cell');
+                        selectC.classList.add('filled-input');
                     }
-                    row.appendChild(cellSupplier);
+
+                    const optionC1 = document.createElement('option');
+                    optionC1.value = 'AISAN NASMOCO INDUSTRI';
+                    optionC1.textContent = 'AISAN NASMOCO INDUSTRI';
+                    selectC.appendChild(optionC1);
+
+                    const optionC2 = document.createElement('option');
+                    optionC2.value = 'AISIN INDONESIA';
+                    optionC2.textContent = 'AISIN INDONESIA';
+                    selectC.appendChild(optionC2);
+
+                    const optionC3 = document.createElement('option');
+                    optionC3.value = 'AISIN INDONESIA OTOMOTIF';
+                    optionC3.textContent = 'AISIN INDONESIA OTOMOTIF';
+                    selectC.appendChild(optionC3);
+
+                    const optionC4 = document.createElement('option');
+                    optionC4.value = 'AOYAMA INDONESIA';
+                    optionC4.textContent = 'AOYAMA INDONESIA';
+                    selectC.appendChild(optionC4);
+
+                    const optionC5 = document.createElement('option');
+                    optionC5.value = 'ART PISTON INDONESIA';
+                    optionC5.textContent = 'ART PISTON INDONESIA';
+                    selectC.appendChild(optionC5);
+
+                    const optionC6 = document.createElement('option');
+                    optionC6.value = 'ASSB MALAYSIA';
+                    optionC6.textContent = 'ASSB MALAYSIA';
+                    selectC.appendChild(optionC6);
+
+                    const optionC7 = document.createElement('option');
+                    optionC7.value = 'ASTRA NIPPON GASKET INDONESIA';
+                    optionC7.textContent = 'ASTRA NIPPON GASKET INDONESIA';
+                    selectC.appendChild(optionC7);
+
+                    const optionC8 = document.createElement('option');
+                    optionC8.value = 'AT INDONESIA';
+                    optionC8.textContent = 'AT INDONESIA';
+                    selectC.appendChild(optionC8);
+
+                    const optionC9 = document.createElement('option');
+                    optionC9.value = 'AUTOMOTIVE FASTENERS AOYAMA INDONESIA';
+                    optionC9.textContent = 'AUTOMOTIVE FASTENERS AOYAMA INDONESIA';
+                    selectC.appendChild(optionC9);
+
+                    const optionC10 = document.createElement('option');
+                    optionC10.value = 'CATALER';
+                    optionC10.textContent = 'CATALER';
+                    selectC.appendChild(optionC10);
+
+                    const optionC11 = document.createElement('option');
+                    optionC11.value = 'DENSO INDONESIA CORPORATION (FAJAR)';
+                    optionC11.textContent = 'DENSO INDONESIA CORPORATION (FAJAR)';
+                    selectC.appendChild(optionC11);
+
+                    const optionC12 = document.createElement('option');
+                    optionC12.value = 'DIAMOND DELECTRIC INDONESIA';
+                    optionC12.textContent = 'DIAMOND DELECTRIC INDONESIA';
+                    selectC.appendChild(optionC12);
+
+                    const optionC13 = document.createElement('option');
+                    optionC13.value = 'FUKOKU TOKAI RUBBER';
+                    optionC13.textContent = 'FUKOKU TOKAI RUBBER';
+                    selectC.appendChild(optionC13);
+
+                    const optionC14 = document.createElement('option');
+                    optionC14.value = 'FUTABA INDONESIA';
+                    optionC14.textContent = 'FUTABA INDONESIA';
+                    selectC.appendChild(optionC14);
+
+                    const optionC15 = document.createElement('option');
+                    optionC15.value = 'HITACHI';
+                    optionC15.textContent = 'HITACHI';
+                    selectC.appendChild(optionC15);
+
+                    const optionC16 = document.createElement('option');
+                    optionC16.value = 'ITOKIN';
+                    optionC16.textContent = 'ITOKIN';
+                    selectC.appendChild(optionC16);
+
+                    const optionC17 = document.createElement('option');
+                    optionC17.value = 'METALART ASTRA INDONESIA';
+                    optionC17.textContent = 'METALART ASTRA INDONESIA';
+                    selectC.appendChild(optionC17);
+
+                    const optionC18 = document.createElement('option');
+                    optionC18.value = 'NICHIAS SUNIJAYA';
+                    optionC18.textContent = 'NICHIAS SUNIJAYA';
+                    selectC.appendChild(optionC18);
+
+                    const optionC19 = document.createElement('option');
+                    optionC19.value = 'NOK INDONESIA';
+                    optionC19.textContent = 'NOK INDONESIA';
+                    selectC.appendChild(optionC19);
+
+                    const optionC20 = document.createElement('option');
+                    optionC20.value = 'OTICS INDONESIA';
+                    optionC20.textContent = 'OTICS INDONESIA';
+                    selectC.appendChild(optionC20);
+
+                    const optionC21 = document.createElement('option');
+                    optionC21.value = 'PAKAR TIRIKEN INDONESIA';
+                    optionC21.textContent = 'PAKAR TIRIKEN INDONESIA';
+                    selectC.appendChild(optionC21);
+
+                    const optionC22 = document.createElement('option');
+                    optionC22.value = 'PARIN';
+                    optionC22.textContent = 'PARIN';
+                    selectC.appendChild(optionC22);
+
+                    const optionC23 = document.createElement('option');
+                    optionC23.value = 'PATEC PRESISI ENGINEERING';
+                    optionC23.textContent = 'PATEC PRESISI ENGINEERING';
+                    selectC.appendChild(optionC23);
+
+                    const optionC24 = document.createElement('option');
+                    optionC24.value = 'ROBERT BOSCH';
+                    optionC24.textContent = 'ROBERT BOSCH';
+                    selectC.appendChild(optionC24);
+
+                    const optionC25 = document.createElement('option');
+                    optionC25.value = 'SARI TAKAGI ELOK PRODUK';
+                    optionC25.textContent = 'SARI TAKAGI ELOK PRODUK';
+                    selectC.appendChild(optionC25);
+
+                    const optionC26 = document.createElement('option');
+                    optionC26.value = 'SIAM THAILAND MOTOR';
+                    optionC26.textContent = 'SIAM THAILAND MOTOR';
+                    selectC.appendChild(optionC26);
+
+                    const optionC27 = document.createElement('option');
+                    optionC27.value = 'SUMIDEN SINTERED COMPONENT INDONESIA';
+                    optionC27.textContent = 'SUMIDEN SINTERED COMPONENT INDONESIA';
+                    selectC.appendChild(optionC27);
+
+                    const optionC28 = document.createElement('option');
+                    optionC28.value = 'SUNCHIRIN INDUSTRI INDONESIA';
+                    optionC28.textContent = 'SUNCHIRIN INDUSTRI INDONESIA';
+                    selectC.appendChild(optionC28);
+
+                    const optionC29 = document.createElement('option');
+                    optionC29.value = 'TAIHO NUSANTARA';
+                    optionC29.textContent = 'TAIHO NUSANTARA';
+                    selectC.appendChild(optionC29);
+
+                    const optionC30 = document.createElement('option');
+                    optionC30.value = 'TB-INA';
+                    optionC30.textContent = 'TB-INA';
+                    selectC.appendChild(optionC30);
+
+                    const optionC31 = document.createElement('option');
+                    optionC31.value = 'TOYOTA BOSHOKU INDONESIA';
+                    optionC31.textContent = 'TOYOTA BOSHOKU INDONESIA';
+                    selectC.appendChild(optionC31);
+
+                    const optionC32 = document.createElement('option');
+                    optionC32.value = 'TPR SALES INDONESIA';
+                    optionC32.textContent = 'TPR SALES INDONESIA';
+                    selectC.appendChild(optionC32);
+
+                    const optionC33 = document.createElement('option');
+                    optionC33.value = 'IVELASTO INDONESIA';
+                    optionC33.textContent = 'IVELASTO INDONESIA';
+                    selectC.appendChild(optionC33);
+
+                    const optionC34 = document.createElement('option');
+                    optionC34.value = 'YASUNAGA INDONESIA';
+                    optionC34.textContent = 'YASUNAGA INDONESIA';
+                    selectC.appendChild(optionC34);
+
+                    const optionC35 = document.createElement('option');
+                    optionC35.value = '#NA';
+                    optionC35.textContent = '#NA';
+                    selectC.appendChild(optionC35);
+
+                    if (item.C) {
+                        selectC.value = item.C;
+                    }
+
+                    selectC.addEventListener('change', function() {
+                        updateColumn(key, 'C', selectC.value);
+                        updateStatusBasedOnColumns(key, {...item, C: selectC.value});
+                        if (selectC.value.trim() !== '') {
+                            selectC.classList.add('filled-input');
+                        } else {
+                            selectC.classList.remove('filled-input');
+                        }
+                    });
+                    cellC.appendChild(selectC);
+                    row.appendChild(cellC);
                     
-                    // Part Number
+                    // Part Number - Input Text
                     const cellPartNo = document.createElement('td');
-                    cellPartNo.textContent = item.D || '-';
+                    const inputD = document.createElement('input');
+                    inputD.type = 'text';
+                    inputD.className = 'edit-input';
+                    inputD.value = item.D || '';
                     if (item.D && item.D.trim() !== '') {
-                        cellPartNo.classList.add('filled-cell');
+                        inputD.classList.add('filled-input');
                     }
+                    inputD.addEventListener('change', function() {
+                        updateColumn(key, 'D', inputD.value);
+                        if (inputD.value.trim() !== '') {
+                            inputD.classList.add('filled-input');
+                        } else {
+                            inputD.classList.remove('filled-input');
+                        }
+                    });
+                    cellPartNo.appendChild(inputD);
                     row.appendChild(cellPartNo);
                     
-                    // Part Name
+                    // Part Name - Input Text
                     const cellPartName = document.createElement('td');
-                    cellPartName.textContent = item.E || '-';
+                    const inputE = document.createElement('input');
+                    inputE.type = 'text';
+                    inputE.className = 'edit-input';
+                    inputE.value = item.E || '';
                     if (item.E && item.E.trim() !== '') {
-                        cellPartName.classList.add('filled-cell');
+                        inputE.classList.add('filled-input');
                     }
+                    inputE.addEventListener('change', function() {
+                        updateColumn(key, 'E', inputE.value);
+                        if (inputE.value.trim() !== '') {
+                            inputE.classList.add('filled-input');
+                        } else {
+                            inputE.classList.remove('filled-input');
+                        }
+                    });
+                    cellPartName.appendChild(inputE);
                     row.appendChild(cellPartName);
                     
-                    // Change Category
-                    const cellChangeCat = document.createElement('td');
-                    cellChangeCat.textContent = item.F || '-';
+                    // Change Category - Input Text
+                    const cellF = document.createElement('td');
+                    const selectF = document.createElement('select');
+                    selectF.className = 'edit-select';
+                    selectF.value = item.F || '';
                     if (item.F && item.F.trim() !== '') {
-                        cellChangeCat.classList.add('filled-cell');
+                        selectF.classList.add('filled-input');
                     }
-                    row.appendChild(cellChangeCat);
+
+                    const optionF1 = document.createElement('option');
+                    optionF1.value = 'Add Supplier';
+                    optionF1.textContent = 'Add Supplier';
+                    selectF.appendChild(optionF1);
+
+                    const optionF2 = document.createElement('option');
+                    optionF2.value = 'Capacity';
+                    optionF2.textContent = 'Capacity';
+                    selectF.appendChild(optionF2);
+
+                    const optionF3 = document.createElement('option');
+                    optionF3.value = 'Change Supplier';
+                    optionF3.textContent = 'Change Supplier';
+                    selectF.appendChild(optionF3);
+
+                    const optionF4 = document.createElement('option');
+                    optionF4.value = 'Cost';
+                    optionF4.textContent = 'Cost';
+                    selectF.appendChild(optionF4);
+
+                    const optionF5 = document.createElement('option');
+                    optionF5.value = 'Govt Regulation';
+                    optionF5.textContent = 'Govt Regulation';
+                    selectF.appendChild(optionF5);
+
+                    const optionF6 = document.createElement('option');
+                    optionF6.valUe = 'Localization';
+                    optionF6.textContent = 'Localization';
+                    selectF.appendChild(optionF6);
+
+                    const optionF7 = document.createElement('option');
+                    optionF7.value = 'Mfg/Storage Loc';
+                    optionF7.textContent = 'Mfg/Storage Loc';
+                    selectF.appendChild(optionF7);
+
+                    const optionF8 = document.createElement('option');
+                    optionF8.value = 'Productivity';
+                    optionF8.textContent = 'Productivity';
+                    selectF.appendChild(optionF8);
+
+                    const optionF9 = document.createElement('option');
+                    optionF9.value = 'Quality';
+                    optionF9.textContent = 'Quality';
+                    selectF.appendChild(optionF9);
+
+                    const optionF10 = document.createElement('option');
+                    optionF10.value = 'Risk Mgmt';
+                    optionF10.textContent = 'Risk Mgmt';
+                    selectF.appendChild(optionF10);
+
+                    const optionF11 = document.createElement('option');
+                    optionF11.value = 'Other';
+                    optionF11.textContent = 'Other';
+                    selectF.appendChild(optionF11);
+
+                    if (item.F) {
+                        selectF.value = item.F;
+                    }
+
+                    selectF.addEventListener('change', function() {
+                        updateColumn(key, 'F', selectF.value);
+                        updateStatusBasedOnColumns(key, {...item, F: selectF.value});
+                        if (selectF.value.trim() !== '') {
+                            selectF.classList.add('filled-input');
+                        } else {
+                            selectF.classList.remove('filled-input');
+                        }
+                    });
+                    cellF.appendChild(selectF);
+                    row.appendChild(cellF);
                     
-                    // Prev. Process
+                    // Prev. Process - Input Text
                     const cellPrevProcess = document.createElement('td');
-                    cellPrevProcess.textContent = item.G || '-';
+                    const inputG = document.createElement('input');
+                    inputG.type = 'text';
+                    inputG.className = 'edit-input';
+                    inputG.value = item.G || '';
                     if (item.G && item.G.trim() !== '') {
-                        cellPrevProcess.classList.add('filled-cell');
+                        inputG.classList.add('filled-input');
                     }
+                    inputG.addEventListener('change', function() {
+                        updateColumn(key, 'G', inputG.value);
+                        if (inputG.value.trim() !== '') {
+                            inputG.classList.add('filled-input');
+                        } else {
+                            inputG.classList.remove('filled-input');
+                        }
+                    });
+                    cellPrevProcess.appendChild(inputG);
                     row.appendChild(cellPrevProcess);
                     
-                    // New Process
+                    // New Process - Input Text
                     const cellNewProcess = document.createElement('td');
-                    cellNewProcess.textContent = item.H || '-';
+                    const inputH = document.createElement('input');
+                    inputH.type = 'text';
+                    inputH.className = 'edit-input';
+                    inputH.value = item.H || '';
                     if (item.H && item.H.trim() !== '') {
-                        cellNewProcess.classList.add('filled-cell');
+                        inputH.classList.add('filled-input');
                     }
+                    inputH.addEventListener('change', function() {
+                        updateColumn(key, 'H', inputH.value);
+                        if (inputH.value.trim() !== '') {
+                            inputH.classList.add('filled-input');
+                        } else {
+                            inputH.classList.remove('filled-input');
+                        }
+                    });
+                    cellNewProcess.appendChild(inputH);
                     row.appendChild(cellNewProcess);
                     
-                    // Column I - Engine Number Sample
-
+                    // ... (bagian kolom-kolom berikutnya tetap sama seperti sebelumnya) ...
+                    
+                    // Column I - Part Sample Received Date
                     const cellColumnI = document.createElement('td');
                     const inputI = document.createElement('input');
                     inputI.type = 'date';
@@ -607,7 +931,6 @@
                         const dateValue = this.value.replace(/-/g, '/');
                         updateColumn(key, 'I', dateValue);
                         updateColumnDependencies(row, item);
-                        // Update filled class
                         if (dateValue.trim() !== '') {
                             inputI.classList.add('filled-input');
                         } else {
@@ -616,9 +939,6 @@
                     });
                     cellColumnI.appendChild(inputI);
                     row.appendChild(cellColumnI);
-
-
-                    
                     
                     // Column J - Special Job Number
                     const cellColumnJ = document.createElement('td');
@@ -637,7 +957,6 @@
                         updateColumn(key, 'J', inputJ.value);
                         updateStatusBasedOnColumns(key, {...item, J: inputJ.value});
                         updateColumnDependencies(row, item);
-                        // Update filled class
                         if (inputJ.value.trim() !== '') {
                             inputJ.classList.add('filled-input');
                         } else {
@@ -664,7 +983,6 @@
                         const dateValue = this.value.replace(/-/g, '/');
                         updateColumn(key, 'K', dateValue);
                         updateColumnDependencies(row, item);
-                        // Update filled class
                         if (dateValue.trim() !== '') {
                             inputK.classList.add('filled-input');
                         } else {
@@ -690,7 +1008,6 @@
                     inputL.addEventListener('change', function() {
                         updateColumn(key, 'L', inputL.value);
                         updateColumnDependencies(row, item);
-                        // Update filled class
                         if (inputL.value.trim() !== '') {
                             inputL.classList.add('filled-input');
                         } else {
@@ -709,7 +1026,6 @@
                         selectM.classList.add('filled-input');
                     }
 
-                    // Add options for Judgement
                     const optionMDefault = document.createElement('option');
                     optionMDefault.value = '';
                     optionMDefault.textContent = 'Select Judgement';
@@ -738,7 +1054,6 @@
                         updateColumn(key, 'M', selectM.value);
                         updateStatusBasedOnColumns(key, {...item, M: selectM.value});
                         updateColumnDependencies(row, item);
-                        // Update filled class
                         if (selectM.value.trim() !== '') {
                             selectM.classList.add('filled-input');
                         } else {
@@ -770,7 +1085,6 @@
                             const dateValue = this.value.replace(/-/g, '/');
                             updateColumn(key, fieldName, dateValue);
                             updateStatusBasedOnColumns(key, {...item, [fieldName]: dateValue});
-                            // Update filled class
                             if (dateValue.trim() !== '') {
                                 inputDate.classList.add('filled-input');
                             } else {
@@ -791,7 +1105,6 @@
                     if (item.P && item.P.trim() !== '') {
                         inputP.classList.add('filled-input');
                     }
-                    // Disable jika semua kolom MP kosong
                     const anyMPFilled = massProLetters.some(letter => item['MP' + letter]);
                     if (!anyMPFilled) {
                         inputP.disabled = true;
@@ -800,7 +1113,6 @@
                     inputP.addEventListener('change', function() {
                         updateColumn(key, 'P', inputP.value);
                         updateStatusBasedOnColumns(key, {...item, P: inputP.value});
-                        // Update filled class
                         if (inputP.value.trim() !== '') {
                             inputP.classList.add('filled-input');
                         } else {
@@ -851,8 +1163,6 @@
                     optionClosed.value = 'Closed';
                     optionClosed.textContent = 'Closed';
                     select.appendChild(optionClosed);
-
-                    
                     
                     if (item.status) {
                         select.value = item.status;
@@ -880,7 +1190,6 @@
                     }
                     inputNotes.addEventListener('change', function() {
                         updateColumn(key, 'notes', inputNotes.value);
-                        // Update filled class
                         if (inputNotes.value.trim() !== '') {
                             inputNotes.classList.add('filled-input');
                         } else {
@@ -889,6 +1198,14 @@
                     });
                     cellColumnNotes.appendChild(inputNotes);
                     row.appendChild(cellColumnNotes);
+
+                    // Action baca pesan pembuat data 
+                    const cellPesan = document.createElement('td');
+                    cellPesan.textContent = item.notes2 || '-';
+                    if (item.notes2 && item.notes2.trim() !== '') {
+                        cellPesan.classList.add('filled-cell');
+                    }
+                    row.appendChild(cellPesan);
 
                     // Action Column - Delete Button
                     const cellAction = document.createElement('td');
@@ -905,8 +1222,6 @@
                 });
 
                 updateCharts(closedCount, ongoingCount, pcrCount, partDiterimaCount, specialJobCount, isrCount);
-                
-                // Update scrollbar width after loading data
                 syncScrollBars();
             });
         }
@@ -916,20 +1231,16 @@
             const inputs = row.querySelectorAll('.edit-input');
             const selects = row.querySelectorAll('.edit-select');
             
-            // Gabungkan semua input dan select
             const allFields = Array.from(inputs).concat(Array.from(selects));
             
-            // Urutkan berdasarkan posisi di tabel
             allFields.sort((a, b) => {
                 return a.closest('td').cellIndex - b.closest('td').cellIndex;
             });
             
-            // Enable/disable columns based on previous column content
             for (let i = 1; i < allFields.length; i++) {
                 const prevField = allFields[i-1];
                 const currentField = allFields[i];
                 
-                // Skip untuk kolom MP (A-F) karena mereka depend on Judgement (M)
                 if (currentField.id && currentField.id.includes('MP')) continue;
                 
                 if (prevField.value && prevField.value.trim() === '' && 
@@ -943,7 +1254,6 @@
                 }
             }
             
-            // Handle khusus untuk kolom MP (A-F) - depend on Judgement (M)
             const judgementSelect = row.querySelector('td:nth-child(14) select');
             const mpInputs = row.querySelectorAll('td:nth-child(15), td:nth-child(16), td:nth-child(17), td:nth-child(18), td:nth-child(19), td:nth-child(20) input');
             
@@ -960,7 +1270,6 @@
                 });
             }
             
-            // Handle khusus untuk First E/G number (P) - depend on salah satu MP terisi
             const firstEGInput = row.querySelector('td:nth-child(21) input');
             if (firstEGInput) {
                 const anyMPFilled = Array.from(mpInputs).some(input => input.value.trim() !== '');
@@ -984,7 +1293,6 @@
         }
 
         // Fungsi untuk mengupdate status di Firebase
-        // Fungsi untuk mengupdate status di Firebase
         function updateStatus(key, newStatus) {
             if (!newStatus) {
                 alert('Please select a status!');
@@ -993,19 +1301,15 @@
             
             if (newStatus === 'Canceled') {
                 if (confirm('Are you sure you want to cancel this record? This will clear data from Part Sample Received Date onwards.')) {
-                    // Dapatkan referensi ke data yang akan diupdate
                     const updates = {};
                     updates[`${key}/status`] = 'Canceled';
                     
-                    // Daftar kolom yang akan dikosongkan (mulai dari I sampai P dan notes)
                     const columnsToClear = ['I', 'J', 'K', 'L', 'M', 'MPA', 'MPB', 'MPC', 'MPD', 'MPE', 'MPF', 'P', 'notes'];
                     
-                    // Tambahkan kolom-kolom yang akan dikosongkan ke updates
                     columnsToClear.forEach(col => {
                         updates[`${key}/${col}`] = '';
                     });
                     
-                    // Lakukan update multi-path
                     database.ref().update(updates)
                         .then(() => {
                             alert('Status updated to Canceled and related data cleared!');
@@ -1016,7 +1320,6 @@
                         });
                 }
             } else {
-                // Untuk status selain Canceled, update seperti biasa
                 database.ref(key + '/status').set(newStatus)
                     .then(() => {
                         alert('Status updated successfully!');
@@ -1035,11 +1338,9 @@
             const table = document.querySelector('#dataTable');
             
             if (tableContainer && tableScrollTop && table) {
-                // Set width of the top scroll indicator
                 const tableScrollTopInner = document.querySelector('.table-scroll-top-inner');
                 tableScrollTopInner.style.width = table.scrollWidth + 'px';
                 
-                // Sync scrolling between top and bottom
                 tableContainer.addEventListener('scroll', function() {
                     tableScrollTop.scrollLeft = this.scrollLeft;
                 });
@@ -1049,6 +1350,7 @@
                 });
             }
         }
+
 
         // Muat data saat halaman dimuat
         window.onload = function() {

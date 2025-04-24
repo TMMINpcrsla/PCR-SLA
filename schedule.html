@@ -107,7 +107,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>Grouping by Month</h1>
+        <h1>Implementation Schedule</h1>
         <div class="table-scroll-container">
             <div class="table-scroll-top">
                 <div class="table-scroll-top-inner"></div>
@@ -156,6 +156,19 @@
             return months[month - 1];
         }
 
+        // Fungsi untuk mendapatkan label berdasarkan MP
+        function getMPLabel(mpKey) {
+            const labels = {
+                'MPA': 'Supplier',
+                'MPB': 'P3 ETA',
+                'MPC': 'CEVD ETD',
+                'MPD': 'Importer ETA',
+                'MPE': 'First Module',
+                'MPF': 'TMMIN Line'
+            };
+            return labels[mpKey] || mpKey;
+        }
+
         // Fungsi untuk memuat dan mengelompokkan data
         function loadAndGroupData() {
             database.ref().once('value').then((snapshot) => {
@@ -180,8 +193,9 @@
                                     }
 
                                     monthMap.get(monthYearKey).push({
-                                        date: `${year}/${month.toString().padStart(2, '0')}/${day.toString().padStart(2, '0')}`,
+                                        date: `${day.toString().padStart(2, '0')}/${month.toString().padStart(2, '0')}/${year}`,
                                         value: item.B || '-',
+                                        label: getMPLabel(mpKey),
                                         key
                                     });
                                 }
@@ -192,7 +206,14 @@
 
                 // Urutkan data per bulan berdasarkan tanggal
                 monthMap.forEach((entries, monthYear) => {
-                    entries.sort((a, b) => a.date.localeCompare(b.date));
+                    entries.sort((a, b) => {
+                        // Urutkan berdasarkan tanggal terlebih dahulu
+                        const dateCompare = a.date.localeCompare(b.date);
+                        if (dateCompare !== 0) return dateCompare;
+                        
+                        // Jika tanggal sama, urutkan berdasarkan label MP
+                        return a.label.localeCompare(b.label);
+                    });
                 });
 
                 // Ambil semua key bulan, urutkan descending
@@ -230,7 +251,7 @@
                         const entries = monthMap.get(key) || [];
                         const td = document.createElement('td');
                         if (entries[row]) {
-                            td.textContent = `${entries[row].date}, ${entries[row].value}`;
+                            td.textContent = `${entries[row].date}, ${entries[row].value} (${entries[row].label})`;
                         }
                         tr.appendChild(td);
                     });

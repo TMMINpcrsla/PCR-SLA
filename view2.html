@@ -221,7 +221,8 @@
                             <th colspan="6">Mass Pro/implementation type</th>
                             <th>First E/G number</th>
                             <th>Status</th>
-                            <th>Notes______________________</th>
+                            <th>Notes dari Pengelola Data</th>
+                            <th>Apabila ada kesalahan input data/ ingin canceled, tulis disini</th>
                         </tr>
                         <tr>
                             <!-- Kolom-kolom sebelum Mass Pro -->
@@ -246,6 +247,7 @@
                             <th>First Module</th>
                             <th>TMMIN Line</th>
                             <!-- Kolom setelah Mass Pro -->
+                            <th></th>
                             <th></th>
                             <th></th>
                             <th></th>
@@ -589,6 +591,35 @@
                     displayNotes.textContent = item.notes || '-';
                     cellColumnNotes.appendChild(displayNotes);
                     row.appendChild(cellColumnNotes);
+
+                    // Message column for corrections/cancellations
+                    const cellPesan = document.createElement('td');
+                    const inputPesan = document.createElement('input');
+                    inputPesan.type = 'text';
+                    inputPesan.className = 'edit-input';
+                    inputPesan.placeholder = 'Tulis pesan disini';
+                    inputPesan.value = item.notes2 || '';
+                    if (item.notes2 && item.notes2.trim() !== '') {
+                        inputPesan.classList.add('filled-input');
+                    }
+
+                    inputPesan.addEventListener('change', function() {
+                        // Update the notes2 field in Firebase
+                        database.ref(key + '/notes2').set(inputPesan.value)
+                            .then(() => {
+                                if (inputPesan.value.trim() !== '') {
+                                    inputPesan.classList.add('filled-input');
+                                } else {
+                                    inputPesan.classList.remove('filled-input');
+                                }
+                            })
+                            .catch((error) => {
+                                console.error('Error updating notes:', error);
+                            });
+                    });
+
+                    cellPesan.appendChild(inputPesan);
+                    row.appendChild(cellPesan);
 
                     tableBody.appendChild(row);
                 });
