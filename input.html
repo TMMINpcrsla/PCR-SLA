@@ -1,68 +1,52 @@
 <!DOCTYPE html>
-<html>
+<html lang="id">
 <head>
     <title>Input Data PCR & SLA</title>
     <link rel="stylesheet" href="style.css">
-    <!-- Sertakan Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-database-compat.js"></script>
     <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        
         .input-form {
             margin: 20px 0;
             padding: 20px;
-            background-color: #f9f9f9;
+            background-color: white;
             border-radius: 8px;
+            box-shadow: 0 0 5px rgba(0,0,0,0.05);
         }
         .input-group {
             margin-bottom: 15px;
-            position: relative;
         }
         .input-group label {
             display: block;
             margin-bottom: 5px;
             font-weight: bold;
-            text-align: left;
-            padding-left: 0;
+            color: #49502c;
         }
-        .input-group input, .input-group select {
+        .input-group input, 
+        .input-group select {
             width: 100%;
             padding: 10px;
             border: 1px solid #ddd;
             border-radius: 4px;
-            box-sizing: border-box;
-        }
-        .submit-btn {
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            padding: 12px 20px;
-            border-radius: 4px;
-            cursor: pointer;
             font-size: 16px;
-        }
-        .submit-btn:hover {
-            background-color: #45a049;
-        }
-        .status-message {
-            margin-top: 15px;
-            padding: 10px;
-            border-radius: 4px;
-            display: none;
-        }
-        .success {
-            background-color: #dff0d8;
-            color: #3c763d;
-        }
-        .error {
-            background-color: #f2dede;
-            color: #a94442;
-        }
-        .container {
-            padding-left: 20px;
+            box-sizing: border-box;
         }
         .date-picker-wrapper {
             position: relative;
-            display: flex;
         }
         .date-picker-wrapper input[type="date"] {
             position: absolute;
@@ -79,7 +63,43 @@
             right: 10px;
             top: 10px;
             pointer-events: none;
+            font-size: 20px;
         }
+        .submit-btn {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+            margin-top: 10px;
+            transition: background-color 0.3s;
+        }
+        .submit-btn:hover {
+            background-color: #45a049;
+        }
+        .status-message {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 4px;
+            display: none;
+        }
+        .success {
+            background-color: #dff0d8;
+            color: #3c763d;
+            border: 1px solid #d6e9c6;
+        }
+        .error {
+            background-color: #f2dede;
+            color: #a94442;
+            border: 1px solid #ebccd1;
+        }
+        .my-button:hover {
+            background-color: #2980b9;
+        }
+        
     </style>
 </head>
 <body>
@@ -101,19 +121,18 @@
 
             <div class="input-group">
                 <label for="inputA1">Angka Khusus</label>
-                <input type="text" id="inputA1" placeholder="tidak wajib, hanya apabila ada tanggal yang sama (dimulai dari 2, cukup angka saja)" maxlength="2">
+                <input type="text" id="inputA1" placeholder="Tidak wajib, hanya apabila ada tanggal yang sama (dimulai dari 2, max 9)" maxlength="1">
             </div>
-
             
             <div class="input-group">
                 <label for="inputB">PCR/SLA Control No.</label>
-                <input type="text" id="inputB">
+                <input type="text" id="inputB" required>
             </div>
             
             <div class="input-group">
                 <label for="inputC">Supplier Name</label>
-                <select id="inputC">
-                    <option value="">Pilih opsi</option>
+                <select id="inputC" required>
+                    <option value="">Pilih Supplier</option>
                     <option value="AISAN NASMOCO INDUSTRI">AISAN NASMOCO INDUSTRI</option>
                     <option value="AISIN INDONESIA">AISIN INDONESIA</option>
                     <option value="AISIN INDONESIA OTOMOTIF">AISIN INDONESIA OTOMOTIF</option>
@@ -154,18 +173,18 @@
 
             <div class="input-group">
                 <label for="inputD">Part Number</label>
-                <input type="text" id="inputD" placeholder="12345-12345-AB" maxlength="14">
+                <input type="text" id="inputD" placeholder="12345-12345-AB" maxlength="14" required>
             </div>
 
             <div class="input-group">
                 <label for="inputE">Part Name</label>
-                <input type="text" id="inputE">
+                <input type="text" id="inputE" required>
             </div>
 
             <div class="input-group">
                 <label for="inputF">Change Category</label>
-                <select id="inputF">
-                    <option value="">Pilih opsi</option>
+                <select id="inputF" required>
+                    <option value="">Pilih Kategori</option>
                     <option value="Add Supplier">Add Supplier</option>
                     <option value="Capacity">Capacity</option>
                     <option value="Change Supplier">Change Supplier</option>
@@ -182,29 +201,31 @@
 
             <div class="input-group">
                 <label for="inputG">Previous Process</label>
-                <input type="text" id="inputG">
+                <input type="text" id="inputG" required>
             </div>
 
             <div class="input-group">
                 <label for="inputH">New Process</label>
-                <input type="text" id="inputH">
+                <input type="text" id="inputH" required>
             </div>
-            
-            <div class="button-container">
-                <button id="submitBtn" class="submit-btn">Enter Data</button>
-            </div>
-            
             <div id="statusMessage" class="status-message"></div>
+            <button id="submitBtn" class="submit-btn">Enter Data</button>
+            
+            
         </div>
         
         <p>Apabila ada kendala, segera sampaikan ke tim Quality Control</p>
         <div class="button-container">
             <a href="index.html" class="my-button">Kembali ke Home</a>
-            <a href="input.html" class="my-button2"> </a>
+            <a href="input.html" class="my-button2"></a>
             <a href="view2.html" class="my-button">Lihat Status</a>
         </div>
     </div>
 
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-database-compat.js"></script>
+    
     <script>
         // Konfigurasi Firebase
         const firebaseConfig = {
@@ -212,7 +233,7 @@
             authDomain: "pcr-sla-28728.firebaseapp.com",
             databaseURL: "https://pcr-sla-28728-default-rtdb.firebaseio.com",
             projectId: "pcr-sla-28728",
-            storageBucket: "pcr-sla-28728.firebasestorage.app",
+            storageBucket: "pcr-sla-28728.appspot.com",
             messagingSenderId: "738065802011",
             appId: "1:738065802011:web:28f865a4cb84a76f0a69be",
             measurementId: "G-NE5XL3LRJ8"
@@ -222,12 +243,11 @@
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
 
-        // Fungsi untuk memformat input tanggal
+        // Format input tanggal (YYYY-MM-DD)
         function formatDateInput() {
             const input = document.getElementById('inputA');
-            let value = input.value.replace(/[^\d]/g, ''); // Hapus semua non-digit
+            let value = input.value.replace(/[^\d]/g, '');
             
-            // Format otomatis saat mengetik
             if (value.length > 4) {
                 value = value.substring(0, 4) + '-' + value.substring(4);
             }
@@ -235,11 +255,27 @@
                 value = value.substring(0, 7) + '-' + value.substring(7);
             }
             
-            // Batasi panjang maksimal
             input.value = value.substring(0, 10);
         }
 
-        // Fungsi untuk mengisi tanggal dari date picker
+        // Validasi input angka khusus (minimal 2)
+        function formatInput() {
+            const input = document.getElementById('inputA1');
+            let value = input.value.replace(/[^\d]/g, '');
+            
+            if (value.length > 0) {
+                const num = parseInt(value, 10);
+                if (num < 2) {
+                    value = '';
+                    showStatus('Angka khusus harus minimal 2', 'error');
+                }
+            }
+            
+            value = value.substring(0, 2);
+            input.value = value;
+        }
+
+        // Set tanggal dari date picker
         function setDateFromPicker(dateValue) {
             if (dateValue) {
                 const date = new Date(dateValue);
@@ -250,15 +286,12 @@
             }
         }
 
+        // Format part number (12345-12345-AB)
         function formatPartNumberInput() {
             const input = document.getElementById('inputD');
-            let value = input.value.toUpperCase(); // Convert ke uppercase
-            value = value.replace(/[^A-Z0-9-]/g, ''); // Hanya biarkan huruf, angka, dan strip
-    
-            // Hapus semua strip untuk memulai pemformatan dari awal
+            let value = input.value.toUpperCase();
+            value = value.replace(/[^A-Z0-9-]/g, '');
             const valueWithoutHyphens = value.replace(/-/g, '');
-    
-            // Format otomatis saat mengetik
             let formattedValue = valueWithoutHyphens;
 
             if (valueWithoutHyphens.length > 5) {
@@ -267,34 +300,38 @@
             if (valueWithoutHyphens.length > 10) {
                 formattedValue = formattedValue.substring(0, 11) + '-' + formattedValue.substring(11);
             }
-                // Batasi panjang maksimal
-             input.value = formattedValue.substring(0, 14);
+            input.value = formattedValue.substring(0, 14);
         }
 
-        // Fungsi untuk mengambil key terbaru dari Firebase
+        // Ambil tanggal terbaru dari Firebase
         function getLatestDateFromFirebase() {
             const ref = database.ref();
             ref.once('value', (snapshot) => {
                 const data = snapshot.val();
                 if (data) {
-                    const keys = Object.keys(data).filter(k => /^\d{4}-\d{2}-\d{2}/.test(k)); // filter key yang berbentuk tanggal
-                    keys.sort(); // urutkan ascending
+                    const keys = Object.keys(data).filter(k => /^\d{4}-\d{2}-\d{2}/.test(k));
+                    keys.sort();
                     const latestKey = keys[keys.length - 1];
-                    document.getElementById('latestDate').textContent = 'Tanggal terbaru adalah: ' + latestKey;
+                    document.getElementById('latestDate').textContent = 'Tanggal Data Terbaru : ' + latestKey;
                 } else {
                     document.getElementById('latestDate').textContent = 'Belum ada data.';
                 }
-            }, (error) => {
-                console.error('Gagal mengambil data:', error);
             });
         }
 
-        // Panggil fungsi saat halaman dimuat
-        window.onload = function() {
-            getLatestDateFromFirebase();
-        };
+        // Tampilkan pesan status
+        function showStatus(message, type) {
+            const statusElement = document.getElementById('statusMessage');
+            statusElement.textContent = message;
+            statusElement.className = 'status-message ' + type;
+            statusElement.style.display = 'block';
+            
+            setTimeout(() => {
+                statusElement.style.display = 'none';
+            }, 3000);
+        }
 
-        // Fungsi untuk menyimpan data ke Firebase
+        // Simpan data ke Firebase dengan validasi unik
         function saveData() {
             const inputA = document.getElementById('inputA').value.trim();
             const inputA1 = document.getElementById('inputA1').value.trim();
@@ -305,7 +342,6 @@
             const inputF = document.getElementById('inputF').value;
             const inputG = document.getElementById('inputG').value.trim();
             const inputH = document.getElementById('inputH').value.trim();
-            const statusMessage = document.getElementById('statusMessage');
 
             // Validasi input
             if (!inputA || !inputB || !inputC || !inputD || !inputE || !inputF || !inputG || !inputH) {
@@ -313,97 +349,88 @@
                 return;
             }
 
-            // Validasi format tanggal (YYYY-MM-DD)
+            // Validasi format tanggal
             const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
             if (!dateRegex.test(inputA)) {
                 showStatus('Format tanggal harus YYYY-MM-DD!', 'error');
                 return;
             }
-             
-            // Simpan data ke Firebase
-            if (inputA1 == '') {
-                database.ref(inputA).set({
-                B: inputB,
-                C: inputC,
-                D: inputD,
-                E: inputE,
-                F: inputF,
-                G: inputG,
-                H: inputH,
-                I:'',//sample part
-                J:'',//special job
-                K:'',//trial date
-                L:'',//trial report number
-                M:'',//trial report result (judgement)
-                P:'',//mas pro report number
-                status: 'New',
-                notes: '',
-                notes2: ''
+
+            // Buat key unik
+            const key = inputA1 ? `${inputA}(${inputA1})` : inputA;
+
+            // Cek apakah key sudah ada
+            database.ref(key).once('value')
+                .then((snapshot) => {
+                    if (snapshot.exists()) {
+                        if (!inputA1) {
+                            showStatus('Tanggal sudah ada, silahkan menambahkan angka khusus', 'error');
+                        } else {
+                            showStatus('Kombinasi tanggal dan angka khusus sudah ada', 'error');
+                        }
+                        return Promise.reject('Key sudah ada');
+                    }
+
+                    // Data untuk disimpan
+                    const dataToSave = {
+                        B: inputB,
+                        C: inputC,
+                        D: inputD,
+                        E: inputE,
+                        F: inputF,
+                        G: inputG,
+                        H: inputH,
+                        I: '', // sample part
+                        J: '', // special job
+                        K: '', // trial date
+                        L: '', // trial report number
+                        M: '', // trial report result
+                        P: '', // mas pro report number
+                        status: 'New',
+                        notes: '',
+                        notes2: '',
+                        timestamp: firebase.database.ServerValue.TIMESTAMP
+                    };
+
+                    return database.ref(key).set(dataToSave);
                 })
-            } else if (inputA1 != '') {
-            }
-                database.ref(inputA +''+'('+inputA1+')').set({
-                B: inputB,
-                C: inputC,
-                D: inputD,
-                E: inputE,
-                F: inputF,
-                G: inputG,
-                H: inputH,
-                I:'',//sample part
-                J:'',//special job
-                K:'',//trial date
-                L:'',//trial report number
-                M:'',//trial report result (judgement)
-                P:'',//mas pro report number
-                status: 'New',
-                notes: ''
-            })
+                .then(() => {
+                    showStatus('Data berhasil disimpan!', 'success');
+                    // Reset form
+                    document.getElementById('inputA').value = '';
+                    document.getElementById('inputA1').value = '';
+                    document.getElementById('inputB').value = '';
+                    document.getElementById('inputC').value = '';
+                    document.getElementById('inputD').value = '';
+                    document.getElementById('inputE').value = '';
+                    document.getElementById('inputF').value = '';
+                    document.getElementById('inputG').value = '';
+                    document.getElementById('inputH').value = '';
+                    
+                    // Update tanggal terbaru
+                    getLatestDateFromFirebase();
+                })
+                .catch((error) => {
+                    if (error !== 'Key sudah ada') {
+                        showStatus('Error: ' + error.message, 'error');
+                    }
+                });
+        }
+
+        // Event listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            getLatestDateFromFirebase();
             
-            .then(() => {
-                showStatus('Data berhasil disimpan!', 'success');
-                // Kosongkan form setelah berhasil disimpan
-                document.getElementById('inputA').value = '';
-                document.getElementById('inputA1').value = '';
-                document.getElementById('inputB').value = '';
-                document.getElementById('inputC').value = '';
-                document.getElementById('inputD').value = '';
-                document.getElementById('inputE').value = '';
-                document.getElementById('inputF').value = '';
-                document.getElementById('inputG').value = '';
-                document.getElementById('inputH').value = '';
-            })
-            .catch((error) => {
-                showStatus('Error: ' + error.message, 'error');
+            document.getElementById('inputA').addEventListener('input', formatDateInput);
+            document.getElementById('inputD').addEventListener('input', formatPartNumberInput);
+            document.getElementById('inputA1').addEventListener('input', formatInput);
+            document.getElementById('submitBtn').addEventListener('click', saveData);
+            
+            document.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    saveData();
+                }
             });
-        }
-
-        // Fungsi untuk menampilkan status
-        function showStatus(message, type) {
-            const statusElement = document.getElementById('statusMessage');
-            statusElement.textContent = message;
-            statusElement.className = 'status-message ' + type;
-            statusElement.style.display = 'block';
-            
-            // Sembunyikan pesan setelah 3 detik
-            setTimeout(() => {
-                statusElement.style.display = 'none';
-            }, 3000);
-        }
-
-        // Event listener untuk input tanggal
-        document.getElementById('inputA').addEventListener('input', formatDateInput);
-        // Event listener untuk input Part Number
-        document.getElementById('inputD').addEventListener('input', formatPartNumberInput);
-
-        // Event listener untuk tombol submit
-        document.getElementById('submitBtn').addEventListener('click', saveData);
-
-        // Tambahkan event listener untuk tombol Enter
-        document.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                saveData();
-            }
         });
     </script>
 </body>
